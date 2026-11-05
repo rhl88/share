@@ -152,7 +152,8 @@
 | 65 | 应用级测试 | 测试放应用自身 `Tests/`，不进框架 `tests/` | `Tests/` |
 | 66 | 测试基类 | 手动补建系统表、执行应用迁移、注册应用 Provider | `Tests/ShareTestCase.php` |
 | 67 | 覆盖场景 | 正常流程、未注册场景、钩子扩展、UV 去重、配置开关、权限拦截、日期格式、二维码、报表、列表表格对齐、设置页分组 Tab、分享预览真实生成、组件资源路径与渠道图标 | `Tests/Feature/ShareFlowTest.php`、`Tests/Feature/AdminTableViewTest.php`、`Tests/Feature/AdminSettingsTabTest.php`、`Tests/Feature/AdminPreviewTest.php`、`Tests/Unit/ChannelServiceTest.php` |
-| 68 | 验证结果 | `php artisan test app/Apps/CmsproShare/Tests` → 48 passed / 351 assertions | 验收记录 |
+| 68 | 验证结果 | `php artisan test app/Apps/CmsproShare/Tests` → 54 passed / 375 assertions | 验收记录 |
+| 69 | F61 修复 | 前台 `track` / `convert` 端点改手动校验（`Validator::make` + `ApiResponse::error(422)`），普通 POST（无 Accept JSON 头）校验失败返回 JSON 契约而非 302 重定向 HTML（常见问题第 1 章）；`share.js` 上报请求补 `Accept: application/json` 头；新增 `TrackApiValidationTest` 6 用例 | `WidgetController`、`share.js` |
 
 ## 十三、版本历史
 

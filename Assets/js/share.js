@@ -19,7 +19,12 @@
             if (navigator.sendBeacon) {
                 navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }));
             } else {
-                fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: body, keepalive: true });
+                fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: body,
+                keepalive: true
+            });
             }
         } catch (e) { /* 上报失败不影响分享主流程 */ }
     }

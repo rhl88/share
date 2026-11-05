@@ -9,6 +9,7 @@ use App\Apps\CmsproShare\Services\TrackService;
 use App\Http\Controllers\Controller;
 use App\Http\Responses\ApiResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 /**
  * 前台公开接口 · 供 JS SDK 与业务应用调用
@@ -74,11 +75,19 @@ class WidgetController extends Controller
      */
     public function track(Request $request)
     {
-        $data = $request->validate([
+        // 手动校验：调用方（JS SDK fetch 分支 / 第三方宿主）不带 Accept: application/json，
+        // 若使用 $request->validate()，失败时 ValidationException 会转成 302 重定向 HTML
+        // （常见问题第 1 章 / F61），破坏接口 JSON 契约。
+        $validator = Validator::make($request->all(), [
             'code' => 'required|string|max:32',
             'event_type' => 'required|string|in:click,landing',
             'channel_code' => 'nullable|string|max:64',
         ]);
+        if ($validator->fails()) {
+            return ApiResponse::error(422, $validator->errors()->first());
+        }
+
+        $data = $validator->validated();
 
         $event = $this->tracker->record(
             (string) $data['code'],
@@ -99,11 +108,17 @@ class WidgetController extends Controller
      */
     public function convert(Request $request)
     {
-        $data = $request->validate([
+        // 同 track：手动校验保证校验失败时始终返回 422 JSON
+        $validator = Validator::make($request->all(), [
             'code' => 'required|string|max:32',
             'event' => 'required|string|max:64',
             'user_id' => 'nullable|integer',
         ]);
+        if ($validator->fails()) {
+            return ApiResponse::error(422, $validator->errors()->first());
+        }
+
+        $data = $validator->validated();
 
         $extra = $request->except(['code', 'event']);
         $result = $this->shares->convert((string) $data['code'], (string) $data['event'], $extra);

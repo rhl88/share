@@ -226,7 +226,7 @@ CmsproShare/
 ├── Migrations/                   # 6 个幂等建表迁移
 ├── Views/                        # Admin / User / Home 三端视图
 ├── Assets/                       # js/share.js（前端 SDK）+ css/share.css（按钮样式与渠道图标品牌色）
-├── Tests/                        # 应用级测试（48 个用例）
+├── Tests/                        # 应用级测试（54 个用例）
 ├── doc/                          # 特性清单 / 使用指南 / 扩展指南
 └── sql/V1.0.0__init_share_tables.sql
 ```
@@ -270,10 +270,13 @@ A：会。预览采用完整真实生成，每次点击「生成预览」都会�
 **Q：二维码 / 海报在预览页没显示？**
 A：分别受 `qrcode_enabled`、`poster_enabled` 控制，在「应用设置 → 渠道与高级能力」开启后重新生成预览即可。海报依赖真实短码，只有真实生成模式下可用。
 
+**Q：调用 track / convert 接口时参数错了，返回的是什么？**
+A：统一返回 JSON 契约：HTTP 200，`body.code` 为业务状态码（`422`=校验失败、`403`=功能未启用、`404`=链接不存在等），`body.message` 为中文错误信息。前台公开接口内部使用 `Validator::make` 手动校验，即使调用方不带 `Accept: application/json` 头（如 `navigator.sendBeacon`、部分 fetch 写法），校验失败也返回 JSON 而非 302 重定向 HTML（常见问题第 1 章 / F61）。回归用例见 `Tests/Feature/TrackApiValidationTest.php`。
+
 ---
 
 ## 八、版本历史
 
 | 版本 | 日期 | 说明 |
 |------|------|------|
-| 1.0.0 | 2026-11-05 | 初始版本 |
+| 1.0.0 | 2026-11-05 | 初始版本；同日修复 F61：前台 track / convert 校验失败由 302 重定向改为统一 JSON 契约 |
