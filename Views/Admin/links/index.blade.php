@@ -50,26 +50,44 @@ layui.use(['table', 'layer', 'jquery'], function () {
     var apiBase = '/api/admin/cmspro/share/links';
     $.ajaxSetup({ headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}' } });
 
+    // 表格列定义：title 不设 width 作为弹性列，避免表头与数据列错位
+    var cols = [[
+        { field: 'id', title: 'ID', width: 80 },
+        { field: 'code', title: '短码', width: 130 },
+        { field: 'title', title: '分享标题', minWidth: 180 },
+        { field: 'scene_code', title: '场景', width: 150 },
+        { field: 'channel_code', title: '渠道', width: 110 },
+        { field: 'sharer_id', title: '分享者', width: 100 },
+        { field: 'click_count', title: '点击', width: 80 },
+        { field: 'visit_count', title: '落地', width: 80 },
+        { field: 'uv_count', title: 'UV', width: 80 },
+        { field: 'convert_count', title: '转化', width: 80 },
+        { field: 'create_time', title: '创建时间', width: 170 },
+        { field: 'status', title: '状态', width: 100, templet: '#linkStatusTpl' },
+        { title: '操作', width: 140, fixed: 'right', templet: '#linkActionTpl' }
+    ]];
+
     table.render({
-        elem: '#linkTable', url: apiBase, page: true, limit: 20,
-        parseData: function (res) {
-            return { code: res.code, msg: res.message, count: res.data.pagination.total, data: res.data.items };
+        id: 'linkTable',
+        elem: '#linkTable',
+        url: apiBase,
+        // 本应用 links 接口读取 limit（非框架 per_page 约定），保持 Layui 默认参数名
+        page: {
+            layout: ['count', 'prev', 'page', 'next', 'limit'],
+            groups: 5,
+            limit: 20,
+            limits: [10, 20, 50, 100]
         },
-        cols: [[
-            { field: 'id', title: 'ID', width: 80 },
-            { field: 'code', title: '短码', width: 130 },
-            { field: 'title', title: '分享标题', minWidth: 180 },
-            { field: 'scene_code', title: '场景', width: 150 },
-            { field: 'channel_code', title: '渠道', width: 110 },
-            { field: 'sharer_id', title: '分享者', width: 100 },
-            { field: 'click_count', title: '点击', width: 80 },
-            { field: 'visit_count', title: '落地', width: 80 },
-            { field: 'uv_count', title: 'UV', width: 80 },
-            { field: 'convert_count', title: '转化', width: 80 },
-            { field: 'create_time', title: '创建时间', width: 170 },
-            { field: 'status', title: '状态', width: 100, templet: '#linkStatusTpl' },
-            { title: '操作', width: 140, fixed: 'right', templet: '#linkActionTpl' }
-        ]]
+        cols: cols,
+        skin: false,
+        parseData: function (res) {
+            return {
+                code: res.code === 0 ? 0 : 1,
+                msg: res.message || '',
+                count: res.data && res.data.pagination ? res.data.pagination.total : 0,
+                data: res.data && res.data.items ? res.data.items : []
+            };
+        }
     });
 
     table.on('tool(linkTable)', function (obj) {

@@ -74,20 +74,29 @@ layui.use(['table', 'form', 'layer', 'jquery'], function () {
         });
     }
 
+    // 表格列定义：至少保留一列不设 width 作为弹性列，避免表头与数据列错位
+    var cols = [[
+        { field: 'code', title: '渠道标识', width: 150 },
+        { field: 'name', title: '名称', minWidth: 150 },
+        { field: 'region', title: '区域', width: 100 },
+        { field: 'mode', title: '方式', width: 110 },
+        { field: 'sort', title: '排序', width: 90, sort: true },
+        { field: 'status', title: '状态', width: 90, templet: '#statusTpl' },
+        { field: 'source', title: '来源', width: 110, templet: '#sourceTpl' },
+        { title: '操作', width: 150, fixed: 'right', templet: '#actionTpl' }
+    ]];
+
     table.render({
+        id: 'channelTable',
         elem: '#channelTable',
-        page: true,
-        limit: 20,
-        cols: [[
-            { field: 'code', title: '渠道标识', width: 150 },
-            { field: 'name', title: '名称', width: 130 },
-            { field: 'region', title: '区域', width: 100 },
-            { field: 'mode', title: '方式', width: 110 },
-            { field: 'sort', title: '排序', width: 90, sort: true },
-            { field: 'status', title: '状态', width: 90, templet: '#statusTpl' },
-            { field: 'source', title: '来源', width: 110, templet: '#sourceTpl' },
-            { title: '操作', width: 150, fixed: 'right', templet: '#actionTpl' }
-        ]],
+        page: {
+            layout: ['count', 'prev', 'page', 'next', 'limit'],
+            groups: 5,
+            limit: 20,
+            limits: [10, 20, 50, 100]
+        },
+        cols: cols,
+        skin: false,
         data: []
     });
 

@@ -54,16 +54,27 @@ layui.use(['table', 'layer', 'jquery'], function () {
         });
     }
 
+    // 表格列定义：resolver 不设 width 作为弹性列，避免表头与数据列错位
+    var cols = [[
+        { field: 'code', title: '场景标识', width: 200 },
+        { field: 'name', title: '场景名称', width: 150 },
+        { field: 'app_id', title: '注册应用', width: 160 },
+        { field: 'resolver', title: '元数据解析器', minWidth: 200 },
+        { field: 'status', title: '状态', width: 90, templet: '#sceneStatusTpl' },
+        { title: '操作', width: 110, fixed: 'right', templet: '#sceneActionTpl' }
+    ]];
+
     table.render({
-        elem: '#sceneTable', page: true, limit: 20,
-        cols: [[
-            { field: 'code', title: '场景标识', width: 200 },
-            { field: 'name', title: '场景名称', width: 150 },
-            { field: 'app_id', title: '注册应用', width: 160 },
-            { field: 'resolver', title: '元数据解析器', minWidth: 200 },
-            { field: 'status', title: '状态', width: 90, templet: '#sceneStatusTpl' },
-            { title: '操作', width: 110, fixed: 'right', templet: '#sceneActionTpl' }
-        ]],
+        id: 'sceneTable',
+        elem: '#sceneTable',
+        page: {
+            layout: ['count', 'prev', 'page', 'next', 'limit'],
+            groups: 5,
+            limit: 20,
+            limits: [10, 20, 50, 100]
+        },
+        cols: cols,
+        skin: false,
         data: []
     });
 

@@ -31,11 +31,27 @@
 <script>
 layui.use(['table', 'jquery'], function () {
     var table = layui.table;
-    var common = { page: true, limit: 10, parseData: function (res) {
-        return { code: res.code, msg: res.message, count: res.data.pagination.total, data: res.data.items };
-    } };
+    // 两个表格共享配置：完整 page 对象 + skin:false，避免表头与数据列错位
+    // 本应用 mine / invites 接口读取 limit（非框架 per_page 约定），保持 Layui 默认参数名
+    var common = {
+        skin: false,
+        page: {
+            layout: ['count', 'prev', 'page', 'next', 'limit'],
+            groups: 5,
+            limit: 10,
+            limits: [10, 20, 50, 100]
+        },
+        parseData: function (res) {
+            return {
+                code: res.code === 0 ? 0 : 1,
+                msg: res.message || '',
+                count: res.data && res.data.pagination ? res.data.pagination.total : 0,
+                data: res.data && res.data.items ? res.data.items : []
+            };
+        }
+    };
 
-    table.render(Object.assign({ elem: '#myShareTable', url: '/api/user/cmspro/share/mine',
+    table.render(Object.assign({ id: 'myShareTable', elem: '#myShareTable', url: '/api/user/cmspro/share/mine',
         cols: [[
             { field: 'code', title: '短码', width: 130 },
             { field: 'title', title: '分享内容', minWidth: 180 },
@@ -47,9 +63,9 @@ layui.use(['table', 'jquery'], function () {
             { field: 'create_time', title: '创建时间', width: 170 }
         ]] }, common));
 
-    table.render(Object.assign({ elem: '#myInviteTable', url: '/api/user/cmspro/share/invites',
+    table.render(Object.assign({ id: 'myInviteTable', elem: '#myInviteTable', url: '/api/user/cmspro/share/invites',
         cols: [[
-            { field: 'link_code', title: '分享短码', width: 150 },
+            { field: 'link_code', title: '分享短码', minWidth: 150 },
             { field: 'visitor_id', title: '访客用户ID', width: 130 },
             { field: 'level', title: '层级', width: 90 },
             { field: 'status', title: '状态', width: 90 },

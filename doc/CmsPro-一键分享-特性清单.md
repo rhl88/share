@@ -129,6 +129,8 @@
 | 60 | Blade / Layui 冲突处理 | 所有含 `{{# }}` 的模板块用 `@verbatim` 包裹 | `Views/Admin/*/index.blade.php` |
 | 61 | 公共资源与 CSRF | pear.css / font-awesome / admin.css / layui.js / pear.js + csrf_token | 各后台视图 |
 
+> 表格对齐规范（《应用视图规范》7.5 节）：所有 Layui 表格均设置 `skin: false`、完整 `page` 配置对象、至少一列 `minWidth` 弹性列，并显式声明表格 `id`；数据看板三张表只初始化一次，查询时用 `table.reload` 更新数据。分页参数保持 `limit`（本应用接口不读 `per_page`）。回归用例见 `Tests/Feature/AdminTableViewTest.php`。
+
 ## 十一、菜单系统
 
 | # | 特性 | 说明 | 实现位置 |
@@ -143,8 +145,8 @@
 |---|------|------|---------|
 | 65 | 应用级测试 | 测试放应用自身 `Tests/`，不进框架 `tests/` | `Tests/` |
 | 66 | 测试基类 | 手动补建系统表、执行应用迁移、注册应用 Provider | `Tests/ShareTestCase.php` |
-| 67 | 覆盖场景 | 正常流程、未注册场景、钩子扩展、UV 去重、配置开关、权限拦截、日期格式、二维码、报表 | `Tests/Feature/ShareFlowTest.php`、`Tests/Unit/ChannelServiceTest.php` |
-| 68 | 验证结果 | `php artisan test app/Apps/CmsproShare/Tests` → 22 passed / 214 assertions | 验收记录 |
+| 67 | 覆盖场景 | 正常流程、未注册场景、钩子扩展、UV 去重、配置开关、权限拦截、日期格式、二维码、报表、列表表格对齐规范 | `Tests/Feature/ShareFlowTest.php`、`Tests/Feature/AdminTableViewTest.php`、`Tests/Unit/ChannelServiceTest.php` |
+| 68 | 验证结果 | `php artisan test app/Apps/CmsproShare/Tests` → 30 passed / 268 assertions | 验收记录 |
 
 ## 十三、版本历史
 

@@ -70,6 +70,33 @@ layui.use(['table', 'laydate', 'jquery'], function () {
     laydate.render({ elem: '#startDate' });
     laydate.render({ elem: '#endDate' });
 
+    // 三张报表各保留一列不设 width 作为弹性列，skin:false 统一表头与数据行盒模型
+    var channelCols = [[
+        { field: 'name', title: '渠道', minWidth: 140 },
+        { field: 'click', title: '点击', width: 90 },
+        { field: 'landing', title: '落地', width: 90 },
+        { field: 'convert', title: '转化', width: 90 }
+    ]];
+    var sceneCols = [[
+        { field: 'name', title: '场景', minWidth: 140 },
+        { field: 'click', title: '点击', width: 90 },
+        { field: 'landing', title: '落地', width: 90 },
+        { field: 'convert', title: '转化', width: 90 }
+    ]];
+    var topLinkCols = [[
+        { field: 'code', title: '短码', width: 130 },
+        { field: 'title', title: '标题', minWidth: 200 },
+        { field: 'scene_code', title: '场景', width: 150 },
+        { field: 'visit_count', title: '落地', width: 90 },
+        { field: 'convert_count', title: '转化', width: 90 },
+        { field: 'create_time', title: '创建时间', width: 170 }
+    ]];
+
+    // 表格只初始化一次，后续查询用 reload 更新数据；重复 render 会叠加多套表头容器
+    table.render({ id: 'channelStatTable', elem: '#channelStatTable', cols: channelCols, skin: false, page: false, data: [] });
+    table.render({ id: 'sceneStatTable', elem: '#sceneStatTable', cols: sceneCols, skin: false, page: false, data: [] });
+    table.render({ id: 'topLinkTable', elem: '#topLinkTable', cols: topLinkCols, skin: false, page: false, data: [] });
+
     function load() {
         $.getJSON('/api/admin/cmspro/share/stats', { start: $('#startDate').val(), end: $('#endDate').val() }, function (res) {
             var o = res.data.overview;
@@ -82,16 +109,9 @@ layui.use(['table', 'laydate', 'jquery'], function () {
                 return '<div class="share-stat-card"><h3>' + c[0] + '</h3><strong>' + c[1] + '</strong></div>';
             }).join(''));
 
-            table.render({ elem: '#channelStatTable', data: res.data.by_channel,
-                cols: [[{ field: 'name', title: '渠道' }, { field: 'click', title: '点击' },
-                    { field: 'landing', title: '落地' }, { field: 'convert', title: '转化' }]] });
-            table.render({ elem: '#sceneStatTable', data: res.data.by_scene,
-                cols: [[{ field: 'name', title: '场景' }, { field: 'click', title: '点击' },
-                    { field: 'landing', title: '落地' }, { field: 'convert', title: '转化' }]] });
-            table.render({ elem: '#topLinkTable', data: res.data.top_links,
-                cols: [[{ field: 'code', title: '短码' }, { field: 'title', title: '标题' },
-                    { field: 'scene_code', title: '场景' }, { field: 'visit_count', title: '落地' },
-                    { field: 'convert_count', title: '转化' }, { field: 'create_time', title: '创建时间' }]] });
+            table.reload('channelStatTable', { data: res.data.by_channel || [] });
+            table.reload('sceneStatTable', { data: res.data.by_scene || [] });
+            table.reload('topLinkTable', { data: res.data.top_links || [] });
         });
     }
 

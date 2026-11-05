@@ -219,7 +219,7 @@ CmsproShare/
 ├── Migrations/                   # 6 个幂等建表迁移
 ├── Views/                        # Admin / User / Home 三端视图
 ├── Assets/                       # js/share.js（前端 SDK）+ css/share.css
-├── Tests/                        # 应用级测试（22 个用例）
+├── Tests/                        # 应用级测试（30 个用例）
 ├── doc/                          # 特性清单 / 使用指南 / 扩展指南
 └── sql/V1.0.0__init_share_tables.sql
 ```
@@ -248,6 +248,11 @@ A：检查 `track_enabled` 是否开启；事件表 `create_time` 是否在所�
 
 **Q：如何复用已有的聚码/访问统计应用？**
 A：本应用不设强依赖。若要把中转链接换成 `cmspro.qrlink` 短链，在业务应用或本应用的扩展点挂 `share.link.build` 过滤器调用其 `QrlinkService::createCode()`；来源分析可把 `share.event.recorded` 事件转发给 `cmspro.sitestat`。
+
+**Q：后台列表表头与数据列没有对齐？**
+A：按《应用视图规范》7.5 节处理。本应用后台与用户端所有 Layui 表格均满足三点：至少保留一列 `minWidth` 弹性列（不设 `width`）、设置 `skin: false` 统一 `th`/`td` 盒模型、用完整 `page` 配置对象替代 `page: true` 简写；每张表显式声明 `id`，数据看板三张表只在初始化时 `render` 一次，查询时用 `table.reload` 更新，避免叠加多套表头容器。回归用例见 `Tests/Feature/AdminTableViewTest.php`。若浏览器仍显示旧布局，请先强制刷新清掉缓存的旧视图/CSS。
+
+> 注意：本应用 `links` / `mine` / `invites` 接口读取的分页参数名是 `limit`，不是框架后台列表的 `per_page` 约定，改造列表时不要照搬 `request.limitName` 映射。
 
 ---
 
