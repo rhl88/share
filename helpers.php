@@ -67,11 +67,13 @@ if (!function_exists('share_asset')) {
     /**
      * 生成应用静态资源地址
      *
-     * 资源由系统在安装时把 Assets/ 发布到 public/apps/cmspro/share/。
+     * 资源由系统在安装时把 Assets/ 发布到 public/apps/{appId}/，本应用 app_id 为 cmspro.share。
+     * 目录名必须保留点号：写成 apps/cmspro/share/ 会命中 Laravel 回退页，
+     * 返回 text/html 导致浏览器拒绝加载样式表与 SDK。
      */
     function share_asset(string $path): string
     {
-        return asset('apps/cmspro/share/' . ltrim($path, '/'));
+        return asset('apps/cmspro.share/' . ltrim($path, '/'));
     }
 }
 

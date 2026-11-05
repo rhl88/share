@@ -16,16 +16,20 @@
     border-radius: 6px;
     background: #fff;
     color: #334155;
+    font-family: inherit;
     font-size: 13px;
     line-height: 1.4;
+    box-sizing: border-box;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
     cursor: pointer;
-    transition: border-color .18s ease, color .18s ease, background .18s ease;
+    transition: border-color .18s ease, color .18s ease, background .18s ease, box-shadow .18s ease;
 }
 
 .cmspro-share-btn:hover {
     border-color: #185fa5;
     color: #185fa5;
     background: #f8fbff;
+    box-shadow: 0 2px 6px rgba(24, 95, 165, .10);
 }
 
 .cmspro-share-btn:focus-visible {
@@ -33,10 +37,55 @@
     outline-offset: 2px;
 }
 
+/* 图标固定宽度，避免 FontAwesome 不同字形造成按钮抖动 */
 .cmspro-share-btn i {
-    font-size: 15px;
+    flex: none;
+    width: 18px;
+    font-size: 16px;
     line-height: 1;
+    text-align: center;
+    color: #64748b;
 }
+
+.cmspro-share-btn span {
+    white-space: nowrap;
+}
+
+/* 渠道图标品牌色：与 ChannelService::defaults() 的 code 对应，自定义渠道回退默认灰蓝 */
+.cmspro-share-btn[data-channel="wechat"] i,
+.cmspro-share-btn[data-channel="moments"] i,
+.cmspro-share-btn[data-channel="wecom"] i { color: #07c160; }
+
+.cmspro-share-btn[data-channel="qq"] i,
+.cmspro-share-btn[data-channel="qzone"] i { color: #12b7f5; }
+
+.cmspro-share-btn[data-channel="weibo"] i,
+.cmspro-share-btn[data-channel="xiaohongshu"] i { color: #e6162d; }
+
+.cmspro-share-btn[data-channel="douyin"] i { color: #161823; }
+
+.cmspro-share-btn[data-channel="dingtalk"] i,
+.cmspro-share-btn[data-channel="facebook"] i,
+.cmspro-share-btn[data-channel="linkedin"] i { color: #1877f2; }
+
+.cmspro-share-btn[data-channel="x"] i { color: #1d9bf0; }
+
+.cmspro-share-btn[data-channel="whatsapp"] i { color: #25d366; }
+
+.cmspro-share-btn[data-channel="line"] i { color: #06c755; }
+
+.cmspro-share-btn[data-channel="telegram"] i { color: #229ed9; }
+
+.cmspro-share-btn[data-channel="pinterest"] i { color: #bd081c; }
+
+.cmspro-share-btn[data-channel="reddit"] i { color: #ff4500; }
+
+.cmspro-share-btn[data-channel="email"] i { color: #f59e0b; }
+
+.cmspro-share-btn[data-channel="copy"] i,
+.cmspro-share-btn[data-channel="qrcode"] i,
+.cmspro-share-btn[data-channel="poster"] i,
+.cmspro-share-btn[data-channel="native"] i { color: #185fa5; }
 
 .cmspro-share-toast {
     position: fixed;

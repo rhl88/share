@@ -56,9 +56,69 @@ class AdminPreviewTest extends ShareTestCase
         $html = $this->renderPage();
 
         $this->assertStringContainsString('cmspro-share', $html);
-        $this->assertStringContainsString('apps/cmspro/share/css/share.css', $html);
-        $this->assertStringContainsString('apps/cmspro/share/js/share.js', $html);
+        $this->assertStringContainsString('apps/cmspro.share/css/share.css', $html);
+        $this->assertStringContainsString('apps/cmspro.share/js/share.js', $html);
+        $this->assertStringNotContainsString(
+            'apps/cmspro/share/',
+            $html,
+            '资源必须按 app_id 发布目录引用，旧路径会返回 HTML 错误页导致样式与 SDK 全部失效'
+        );
         $this->assertStringContainsString('真实分享记录', $html, '需明确告知预览会写入真实数据');
+    }
+
+    public function test_share_asset_points_to_published_app_directory(): void
+    {
+        $css = share_asset('css/share.css');
+        $js = share_asset('js/share.js');
+
+        $this->assertStringContainsString('apps/cmspro.share/css/share.css', $css);
+        $this->assertStringContainsString('apps/cmspro.share/js/share.js', $js);
+        $this->assertStringNotContainsString('apps/cmspro/share/', $css);
+        $this->assertStringNotContainsString('apps/cmspro/share/', $js);
+
+        // 组件源文件必须存在；public/apps/{appId}/ 由框架安装时发布，不纳入应用测试的环境依赖
+        $this->assertFileExists(base_path('app/Apps/CmsproShare/Assets/css/share.css'));
+        $this->assertFileExists(base_path('app/Apps/CmsproShare/Assets/js/share.js'));
+    }
+
+    public function test_share_render_buttons_carry_channel_icons(): void
+    {
+        $this->withoutMiddleware();
+        $this->registerScene('blog.article');
+
+        $html = share_render('blog.article', 7);
+
+        $this->assertStringContainsString('class="cmspro-share-btn', $html);
+        $this->assertStringContainsString('data-channel="wechat"', $html);
+        $this->assertMatchesRegularExpression(
+            '/<i class="fa fa-[a-z-]+"/',
+            $html,
+            '服务端直出的按钮必须带渠道图标类名'
+        );
+    }
+
+    public function test_preview_build_returns_channel_icons_and_styles_define_brand_colors(): void
+    {
+        $this->withoutMiddleware();
+
+        $response = $this->postJson(self::API, [
+            'scene_code' => self::DEMO_SCENE,
+            'target_id' => '1',
+        ]);
+
+        $response->assertOk()->assertJson(['code' => 0]);
+        $channels = $response->json('data.channels');
+        $this->assertNotEmpty($channels);
+        foreach ($channels as $channel) {
+            $this->assertStringStartsWith('fa fa-', (string) ($channel['icon'] ?? ''), '每个渠道需返回图标类名');
+        }
+
+        $html = $this->renderPage();
+        $this->assertStringContainsString("c.icon || 'fa fa-share-alt'", $html, '预览面板需渲染 <i> 图标并保留兜底图标');
+
+        $css = (string) file_get_contents(base_path('app/Apps/CmsproShare/Assets/css/share.css'));
+        $this->assertStringContainsString('.cmspro-share-btn i', $css, '组件样式需定义按钮图标');
+        $this->assertStringContainsString('[data-channel="wechat"] i', $css, '按钮图标需按渠道着色，便于辨识');
     }
 
     public function test_scene_list_includes_demo_and_registered_scenes(): void

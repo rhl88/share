@@ -135,6 +135,8 @@
 
 > 分享预览页：复用真实 `share.css` / `share.js` 渲染与 `share_render()` 一致的面板 DOM；渠道表沿用 7.5 节对齐规范。预览走真实 `build()`（写入分享记录与 create 事件），内置演示场景由请求内 `share.types` 钩子注入、不落库。回归用例见 `Tests/Feature/AdminPreviewTest.php`。
 
+> 组件资源与图标：静态资源由框架发布到 `public/apps/{appId}/`，`share_asset()` 按 `apps/cmspro.share/` 生成地址（旧写法 `apps/cmspro/share/` 会返回 HTML 回退页导致样式与 SDK 失效）；按钮图标取渠道 `icon` 字段的 FontAwesome 类名，`share.css` 按 `data-channel` 着色并固定图标宽度，预览页额外提供浅色衬底。回归用例见 `Tests/Feature/AdminPreviewTest.php` 中的资源路径、图标类名与品牌色断言。
+
 ## 十一、菜单系统
 
 | # | 特性 | 说明 | 实现位置 |
@@ -149,8 +151,8 @@
 |---|------|------|---------|
 | 65 | 应用级测试 | 测试放应用自身 `Tests/`，不进框架 `tests/` | `Tests/` |
 | 66 | 测试基类 | 手动补建系统表、执行应用迁移、注册应用 Provider | `Tests/ShareTestCase.php` |
-| 67 | 覆盖场景 | 正常流程、未注册场景、钩子扩展、UV 去重、配置开关、权限拦截、日期格式、二维码、报表、列表表格对齐、设置页分组 Tab、分享预览真实生成 | `Tests/Feature/ShareFlowTest.php`、`Tests/Feature/AdminTableViewTest.php`、`Tests/Feature/AdminSettingsTabTest.php`、`Tests/Feature/AdminPreviewTest.php`、`Tests/Unit/ChannelServiceTest.php` |
-| 68 | 验证结果 | `php artisan test app/Apps/CmsproShare/Tests` → 45 passed / 324 assertions | 验收记录 |
+| 67 | 覆盖场景 | 正常流程、未注册场景、钩子扩展、UV 去重、配置开关、权限拦截、日期格式、二维码、报表、列表表格对齐、设置页分组 Tab、分享预览真实生成、组件资源路径与渠道图标 | `Tests/Feature/ShareFlowTest.php`、`Tests/Feature/AdminTableViewTest.php`、`Tests/Feature/AdminSettingsTabTest.php`、`Tests/Feature/AdminPreviewTest.php`、`Tests/Unit/ChannelServiceTest.php` |
+| 68 | 验证结果 | `php artisan test app/Apps/CmsproShare/Tests` → 48 passed / 351 assertions | 验收记录 |
 
 ## 十三、版本历史
 

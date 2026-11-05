@@ -151,10 +151,14 @@ class ArticleShareResolver
 不改动 Blade 模板、由前端动态渲染时使用：
 
 ```html
-<link rel="stylesheet" href="/apps/cmspro/share/css/share.css">
+<link rel="stylesheet" href="/apps/cmspro.share/css/share.css">
 <div class="cmspro-share" data-share-widget="/api/cmspro/share/widget/AbCd1234"></div>
-<script src="/apps/cmspro/share/js/share.js" defer></script>
+<script src="/apps/cmspro.share/js/share.js" defer></script>
 ```
+
+> 资源目录按 `public/apps/{appId}/` 发布，本应用 app_id 为 `cmspro.share`，**目录名必须保留点号**。写成 `/apps/cmspro/share/` 会命中 Laravel 回退页（返回 `text/html`），浏览器将拒绝加载样式表，按钮会退化成无样式的原生按钮。也可直接用 `share_asset('css/share.css')` 生成地址。
+>
+> 按钮图标使用 FontAwesome 4.7 类名（渠道 `icon` 字段），业务前台页面需按《CMSPRO-UI开发规范》引入 `CmsProUi/font-awesome/4.7.0/css/font-awesome.min.css`；后台视图已统一引入。`share.css` 会按 `data-channel` 为图标着色，未匹配到品牌色的自定义渠道回退灰蓝色。
 
 也可先调用 `ShareService::build()` 取得短码，再交给前端：
 
@@ -380,7 +384,7 @@ if ($shareCode) {
 | `share_render` | `share_render(string $sceneCode, $targetId, array $options = []): string` | 渲染完整分享面板 HTML（含 SDK/样式注入，单次请求只注入一次） |
 | `share_url` | `share_url(string $sceneCode, $targetId, array $options = []): string` | 返回中转链接，失败返回 `''` |
 | `share_config` | `share_config(string $name, $default = null)` | 读取配置项（name 不含前缀） |
-| `share_asset` | `share_asset(string $path): string` | 生成 `public/apps/cmspro/share/` 资源地址 |
+| `share_asset` | `share_asset(string $path): string` | 生成 `public/apps/cmspro.share/` 下的组件资源地址 |
 | `share_is_installed` | `share_is_installed(): bool` | 应用是否已安装并启用 |
 
 > 所有函数均以 `function_exists` 包裹，不会与其他应用冲突；失败时返回空串或 HTML 注释，不抛异常、不破坏页面布局。

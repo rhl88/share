@@ -12,7 +12,14 @@
     <link rel="stylesheet" href="{{ share_asset('css/share.css') }}">
     <style>
         .share-hint { color: #999; font-size: 12px; line-height: 1.8; margin-top: 10px; }
-        #sharePanel { min-height: 48px; padding: 4px 0; }
+        #sharePanel {
+            min-height: 64px;
+            padding: 12px;
+            background: #f8fafc;
+            border: 1px dashed #e2e8f0;
+            border-radius: 8px;
+        }
+        #sharePanel .cmspro-share { margin: 0; }
         .share-info td:first-child { width: 100px; color: #666; }
         .share-media { display: flex; gap: 24px; flex-wrap: wrap; }
         .share-media-item { flex: 1 1 200px; text-align: center; }
@@ -58,7 +65,7 @@
             <div class="layui-card-header">分享面板（真实交互，可点击体验）</div>
             <div class="layui-card-body">
                 <div id="sharePanel"></div>
-                <p class="share-hint">按钮行为由前端 SDK 接管：链接型渠道打开分享端点，复制链接 / 二维码 / 海报 / 原生分享按渠道 mode 执行；点击会上报 click 事件。</p>
+                <p class="share-hint">按钮图标取自渠道 icon 配置，未配置时回退通用分享图标。按钮行为由前端 SDK 接管：链接型渠道打开分享端点，复制链接 / 二维码 / 海报 / 原生分享按渠道 mode 执行；点击会上报 click 事件。</p>
             </div>
         </div>
 

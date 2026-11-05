@@ -73,7 +73,7 @@ SELECT COUNT(*) FROM config_items WHERE code LIKE 'app_cmspro_share_%';
 | 分享记录 | `/admin/cmspro/share/links` | 按短码/标题/对象ID/场景检索，查看点击、落地、UV、转化 |
 | 数据看板 | `/admin/cmspro/share/stats` | 漏斗、渠道效果、场景效果、热门链接、趋势 |
 | 应用设置 | `/admin/cmspro/share/settings` | 按 4 个配置分组 Tab 切换，共 27 项配置，即时生效 |
-| 分享预览 | `/admin/cmspro/share/preview` | 选场景 + 对象 ID 生成真实分享链接，预览分享面板、渠道链接、二维码、海报与中转落地 |
+| 分享预览 | `/admin/cmspro/share/preview` | 选场景 + 对象 ID 生成真实分享链接，预览带渠道图标的分享面板、渠道链接、二维码、海报与中转落地 |
 
 ### 3.2 内置渠道清单
 
@@ -225,8 +225,8 @@ CmsproShare/
 ├── Models/                       # 6 个模型
 ├── Migrations/                   # 6 个幂等建表迁移
 ├── Views/                        # Admin / User / Home 三端视图
-├── Assets/                       # js/share.js（前端 SDK）+ css/share.css
-├── Tests/                        # 应用级测试（45 个用例）
+├── Assets/                       # js/share.js（前端 SDK）+ css/share.css（按钮样式与渠道图标品牌色）
+├── Tests/                        # 应用级测试（48 个用例）
 ├── doc/                          # 特性清单 / 使用指南 / 扩展指南
 └── sql/V1.0.0__init_share_tables.sql
 ```
@@ -237,6 +237,9 @@ CmsproShare/
 
 **Q：渠道按钮没显示？**
 A：依次检查 ①应用是否已启用；②场景是否在「场景管理」被禁用；③「默认展示渠道」白名单是否排除了该渠道；④对应能力开关（`qrcode_enabled` / `poster_enabled` / `copy_enabled` / `native_enabled`）是否关闭。
+
+**Q：分享按钮没有图标、也没有边框圆角（看起来是原生按钮）？**
+A：说明 `share.css` / `share.js` 没有加载成功。本应用资源由框架发布到 `public/apps/cmspro.share/`，对应 URL 为 `/apps/cmspro.share/css/share.css` 与 `/apps/cmspro.share/js/share.js`（目录名带点号，不能写成 `/apps/cmspro/share/`）。在浏览器开发者工具的 Network 面板确认这两个请求返回 `text/css` / `application/javascript`；若返回 `text/html`，一般是资源路径写错或应用资源软链接未生成（重新执行一次应用安装/升级即可）。图标本身依赖 FontAwesome 4.7：后台视图已统一引入，业务前台页面需按《CMSPRO-UI开发规范》自行引入 `CmsProUi/font-awesome/4.7.0/css/font-awesome.min.css`。回归用例见 `Tests/Feature/AdminPreviewTest.php`。
 
 **Q：分享链接打开后提示失效？**
 A：检查 `links.status` 是否为 1、`expire_time` 是否过期（`link_ttl_days`），以及短码是否被改写（如被 `share.link.build` 钩子挂了外部短链）。
