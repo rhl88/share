@@ -70,7 +70,7 @@ SELECT COUNT(*) FROM config_items WHERE code LIKE 'app_cmspro_share_%';
 | 场景管理 | `/admin/cmspro/share/scenes` | 查看业务应用注册的场景，同步快照、启停覆盖 |
 | 分享记录 | `/admin/cmspro/share/links` | 按短码/标题/对象ID/场景检索，查看点击、落地、UV、转化 |
 | 数据看板 | `/admin/cmspro/share/stats` | 漏斗、渠道效果、场景效果、热门链接、趋势 |
-| 应用设置 | `/admin/cmspro/share/settings` | 四组共 27 项配置，即时生效 |
+| 应用设置 | `/admin/cmspro/share/settings` | 按 4 个配置分组 Tab 切换，共 27 项配置，即时生效 |
 
 ### 3.2 内置渠道清单
 
@@ -85,6 +85,8 @@ SELECT COUNT(*) FROM config_items WHERE code LIKE 'app_cmspro_share_%';
 > 后台「默认展示渠道」配置项为英文逗号分隔的白名单，留空表示展示所有启用渠道；该白名单只约束内置渠道，业务应用通过 `share.channels` 钩子注册的自定义渠道不受限制。
 
 ### 3.3 配置项说明（27 项）
+
+> 设置页按 `manifest.json` 的 4 个 `config_groups` 生成 Tab：基础设置 / 渠道与高级能力 / 裂变与归因 / 统计与报表。切换 Tab 只影响显示，点「保存设置」会一次提交全部 27 项，不会漏存其它分组；「重新加载」后仍停留在当前分组。
 
 **基础设置**
 
@@ -219,7 +221,7 @@ CmsproShare/
 ├── Migrations/                   # 6 个幂等建表迁移
 ├── Views/                        # Admin / User / Home 三端视图
 ├── Assets/                       # js/share.js（前端 SDK）+ css/share.css
-├── Tests/                        # 应用级测试（30 个用例）
+├── Tests/                        # 应用级测试（37 个用例）
 ├── doc/                          # 特性清单 / 使用指南 / 扩展指南
 └── sql/V1.0.0__init_share_tables.sql
 ```

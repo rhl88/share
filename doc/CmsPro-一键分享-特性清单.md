@@ -131,6 +131,8 @@
 
 > 表格对齐规范（《应用视图规范》7.5 节）：所有 Layui 表格均设置 `skin: false`、完整 `page` 配置对象、至少一列 `minWidth` 弹性列，并显式声明表格 `id`；数据看板三张表只初始化一次，查询时用 `table.reload` 更新数据。分页参数保持 `limit`（本应用接口不读 `per_page`）。回归用例见 `Tests/Feature/AdminTableViewTest.php`。
 
+> 设置页分组 Tab：按接口返回的 `group`（对应 4 个 `config_groups`）动态生成 `layui-tab`，插入后调用 `element.render('tab', 'settingsTab')`；所有 Tab 共用同一个 `<form>`，保存时整表收集并跳过 Layui 生成的无 `name` 辅助控件。「重新加载」通过 `element.tabChange` 恢复原分组。回归用例见 `Tests/Feature/AdminSettingsTabTest.php`。
+
 ## 十一、菜单系统
 
 | # | 特性 | 说明 | 实现位置 |
@@ -145,8 +147,8 @@
 |---|------|------|---------|
 | 65 | 应用级测试 | 测试放应用自身 `Tests/`，不进框架 `tests/` | `Tests/` |
 | 66 | 测试基类 | 手动补建系统表、执行应用迁移、注册应用 Provider | `Tests/ShareTestCase.php` |
-| 67 | 覆盖场景 | 正常流程、未注册场景、钩子扩展、UV 去重、配置开关、权限拦截、日期格式、二维码、报表、列表表格对齐规范 | `Tests/Feature/ShareFlowTest.php`、`Tests/Feature/AdminTableViewTest.php`、`Tests/Unit/ChannelServiceTest.php` |
-| 68 | 验证结果 | `php artisan test app/Apps/CmsproShare/Tests` → 30 passed / 268 assertions | 验收记录 |
+| 67 | 覆盖场景 | 正常流程、未注册场景、钩子扩展、UV 去重、配置开关、权限拦截、日期格式、二维码、报表、列表表格对齐、设置页分组 Tab | `Tests/Feature/ShareFlowTest.php`、`Tests/Feature/AdminTableViewTest.php`、`Tests/Feature/AdminSettingsTabTest.php`、`Tests/Unit/ChannelServiceTest.php` |
+| 68 | 验证结果 | `php artisan test app/Apps/CmsproShare/Tests` → 37 passed / 285 assertions | 验收记录 |
 
 ## 十三、版本历史
 
