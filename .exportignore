@@ -1,0 +1,8 @@
+# 应用打包分发时排除（开发期产物，不随应用包发布）
+.git/
+.gitignore
+.exportignore
+Tests/
+*.bak
+*.tmp
+*.log

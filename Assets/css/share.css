@@ -1,0 +1,109 @@
+/* 一键分享组件样式：浅色中性风格，可由业务主题覆盖 */
+.cmspro-share {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+    margin: 12px 0;
+}
+
+.cmspro-share-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #fff;
+    color: #334155;
+    font-size: 13px;
+    line-height: 1.4;
+    cursor: pointer;
+    transition: border-color .18s ease, color .18s ease, background .18s ease;
+}
+
+.cmspro-share-btn:hover {
+    border-color: #185fa5;
+    color: #185fa5;
+    background: #f8fbff;
+}
+
+.cmspro-share-btn:focus-visible {
+    outline: 2px solid #185fa5;
+    outline-offset: 2px;
+}
+
+.cmspro-share-btn i {
+    font-size: 15px;
+    line-height: 1;
+}
+
+.cmspro-share-toast {
+    position: fixed;
+    left: 50%;
+    bottom: 48px;
+    transform: translate(-50%, 12px);
+    max-width: 80vw;
+    padding: 10px 18px;
+    border-radius: 6px;
+    background: rgba(30, 41, 59, .92);
+    color: #fff;
+    font-size: 13px;
+    line-height: 1.6;
+    opacity: 0;
+    z-index: 9999;
+    transition: opacity .25s ease, transform .25s ease;
+    pointer-events: none;
+}
+
+.cmspro-share-toast.is-visible {
+    opacity: 1;
+    transform: translate(-50%, 0);
+}
+
+.cmspro-share-mask {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(15, 23, 42, .55);
+    z-index: 9998;
+    padding: 20px;
+}
+
+.cmspro-share-panel {
+    background: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    text-align: center;
+    min-width: 260px;
+}
+
+.cmspro-share-panel img {
+    width: 260px;
+    height: 260px;
+    display: block;
+    margin: 0 auto;
+}
+
+.cmspro-share-panel p {
+    margin: 12px 0 16px;
+    color: #475569;
+    font-size: 13px;
+}
+
+.cmspro-share-close {
+    padding: 7px 20px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background: #fff;
+    color: #334155;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .cmspro-share-btn,
+    .cmspro-share-toast { transition: none; }
+}

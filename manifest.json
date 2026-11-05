@@ -1,0 +1,321 @@
+{
+    "id": "cmspro.share",
+    "name": "一键分享",
+    "description": "通用分享中台：内置国内外主流社交渠道，支持任意应用注册分享场景、裂变邀请归因与全链路数据跟踪",
+    "version": "1.0.0",
+    "author": "CmsPro",
+    "author_url": "https://www.cmspro.cn",
+    "icon": "fa fa-share-alt",
+    "require": {
+        "php": ">=8.3",
+        "cmspro": ">=5.0.0"
+    },
+    "dependencies": {
+        "app_ids": [],
+        "versions": {}
+    },
+    "providers": [
+        "ServiceProvider"
+    ],
+    "hooks": "Hooks",
+    "install": "Install",
+    "home_routes": {
+        "/share/{code}": "分享中转跳转",
+        "/api/cmspro/share/qrcode": "分享二维码生成",
+        "/api/cmspro/share/poster/{code}": "分享海报生成",
+        "/api/cmspro/share/widget/{code}": "分享组件数据",
+        "/api/cmspro/share/track": "分享事件上报",
+        "/api/cmspro/share/convert": "分享转化上报"
+    },
+    "menus": [
+        {
+            "code": "admin_cmspro_share",
+            "title": "一键分享",
+            "icon": "fa fa-share-alt",
+            "order": 90,
+            "children": [
+                {
+                    "code": "admin_cmspro_share_channels",
+                    "title": "渠道管理",
+                    "icon": "fa fa-share-square-o",
+                    "path": "/admin/cmspro/share/channels",
+                    "order": 1
+                },
+                {
+                    "code": "admin_cmspro_share_scenes",
+                    "title": "场景管理",
+                    "icon": "fa fa-cubes",
+                    "path": "/admin/cmspro/share/scenes",
+                    "order": 2
+                },
+                {
+                    "code": "admin_cmspro_share_links",
+                    "title": "分享记录",
+                    "icon": "fa fa-link",
+                    "path": "/admin/cmspro/share/links",
+                    "order": 3
+                },
+                {
+                    "code": "admin_cmspro_share_stats",
+                    "title": "数据看板",
+                    "icon": "fa fa-bar-chart",
+                    "path": "/admin/cmspro/share/stats",
+                    "order": 4
+                },
+                {
+                    "code": "admin_cmspro_share_settings",
+                    "title": "应用设置",
+                    "icon": "fa fa-cog",
+                    "path": "/admin/cmspro/share/settings",
+                    "order": 5
+                }
+            ]
+        }
+    ],
+    "user_menus": [
+        {
+            "code": "user_cmspro_share",
+            "title": "我的分享",
+            "icon": "fa fa-share-alt",
+            "order": 60,
+            "children": [
+                {
+                    "code": "user_cmspro_share_my",
+                    "title": "我的分享",
+                    "icon": "fa fa-list-alt",
+                    "path": "/user/cmspro/share",
+                    "order": 1
+                }
+            ]
+        }
+    ],
+    "config_groups": [
+        {
+            "name": "basic_settings",
+            "title": "基础设置",
+            "items": [
+                {
+                    "name": "access_path",
+                    "title": "中转路径前缀",
+                    "type": "text",
+                    "value": "share",
+                    "tips": "分享中转链接路径，如 share 表示 /share/{短码}。修改后需清除路由缓存"
+                },
+                {
+                    "name": "default_channels",
+                    "title": "默认展示渠道",
+                    "type": "textarea",
+                    "value": "wechat,moments,qq,qzone,weibo,copy,qrcode,facebook,x,whatsapp,telegram",
+                    "tips": "英文逗号分隔的渠道标识，留空表示展示全部启用渠道。可在渠道管理中单独启停"
+                },
+                {
+                    "name": "link_ttl_days",
+                    "title": "分享链接有效期",
+                    "type": "number",
+                    "value": "0",
+                    "tips": "单位：天，0 表示长期有效。超过有效期的链接不再跳转"
+                },
+                {
+                    "name": "code_length",
+                    "title": "短码长度",
+                    "type": "number",
+                    "value": "8",
+                    "tips": "分享短码字符长度，范围 6-16"
+                },
+                {
+                    "name": "track_enabled",
+                    "title": "启用数据跟踪",
+                    "type": "switch",
+                    "value": "1",
+                    "tips": "关闭后不再写入事件表与统计，分享与跳转功能不受影响"
+                },
+                {
+                    "name": "data_retention_days",
+                    "title": "事件保留天数",
+                    "type": "number",
+                    "value": "90",
+                    "tips": "超过天数的原始事件将被清理，0 表示永久保留；日聚合数据始终保留"
+                },
+                {
+                    "name": "default_title",
+                    "title": "兜底分享标题",
+                    "type": "text",
+                    "value": "",
+                    "tips": "业务应用未提供标题时使用，留空则取站点名称"
+                },
+                {
+                    "name": "default_image",
+                    "title": "兜底分享缩略图",
+                    "type": "image",
+                    "value": "",
+                    "tips": "业务应用未提供缩略图时使用，微信分享建议 300×300 以上正方形图片"
+                }
+            ]
+        },
+        {
+            "name": "channel_settings",
+            "title": "渠道与高级能力",
+            "items": [
+                {
+                    "name": "wechat_sdk_enabled",
+                    "title": "启用微信 JS-SDK",
+                    "type": "switch",
+                    "value": "0",
+                    "tips": "开启后可在微信内自定义分享标题、描述与缩略图，需填写公众号 AppID/AppSecret 并配置 JS 接口安全域名"
+                },
+                {
+                    "name": "wechat_app_id",
+                    "title": "公众号 AppID",
+                    "type": "text",
+                    "value": "",
+                    "tips": "微信公众平台 → 基本配置 → 开发者ID"
+                },
+                {
+                    "name": "wechat_app_secret",
+                    "title": "公众号 AppSecret",
+                    "type": "password",
+                    "value": "",
+                    "tips": "仅用于换取 jsapi_ticket，请妥善保管，勿提交到代码仓库"
+                },
+                {
+                    "name": "qrcode_enabled",
+                    "title": "启用二维码",
+                    "type": "switch",
+                    "value": "1",
+                    "tips": "使用 endroid/qr-code 输出 SVG，无需 GD 扩展"
+                },
+                {
+                    "name": "poster_enabled",
+                    "title": "启用分享海报",
+                    "type": "switch",
+                    "value": "0",
+                    "tips": "合成含二维码的 SVG 海报，纯矢量实现，不依赖图片处理扩展"
+                },
+                {
+                    "name": "native_enabled",
+                    "title": "启用系统原生分享",
+                    "type": "switch",
+                    "value": "1",
+                    "tips": "移动端支持 Web Share API 时调用系统分享面板"
+                },
+                {
+                    "name": "copy_enabled",
+                    "title": "启用复制链接",
+                    "type": "switch",
+                    "value": "1",
+                    "tips": "抖音、小红书等无官方网页分享接口的平台，采用复制链接 + 引导粘贴方式"
+                },
+                {
+                    "name": "wechat_guide_text",
+                    "title": "微信内引导文案",
+                    "type": "textarea",
+                    "value": "请点击右上角菜单，选择「发送给朋友」或「分享到朋友圈」",
+                    "tips": "未启用 JS-SDK 时，在微信内置浏览器中显示的引导提示"
+                }
+            ]
+        },
+        {
+            "name": "fission_settings",
+            "title": "裂变与归因",
+            "items": [
+                {
+                    "name": "invite_enabled",
+                    "title": "启用邀请关系绑定",
+                    "type": "switch",
+                    "value": "1",
+                    "tips": "访客打开分享链接时绑定上下级邀请关系，形成裂变关系链"
+                },
+                {
+                    "name": "invite_max_level",
+                    "title": "邀请关系最大层级",
+                    "type": "select",
+                    "value": "2",
+                    "options": [
+                        { "label": "仅一级（直接邀请）", "value": "1" },
+                        { "label": "两级", "value": "2" },
+                        { "label": "三级", "value": "3" }
+                    ],
+                    "tips": "沿 parent_code 向上级回溯的最大层数"
+                },
+                {
+                    "name": "invite_window_days",
+                    "title": "归因有效期",
+                    "type": "number",
+                    "value": "30",
+                    "tips": "单位：天，分享链接生成后多少天内产生的落地仍可绑定邀请关系"
+                },
+                {
+                    "name": "convert_enabled",
+                    "title": "启用转化归因",
+                    "type": "switch",
+                    "value": "1",
+                    "tips": "允许业务应用上报注册、下单等转化事件，并按分享链路归因"
+                },
+                {
+                    "name": "reward_event_enabled",
+                    "title": "启用奖励通知事件",
+                    "type": "switch",
+                    "value": "1",
+                    "tips": "转化成功后触发 share.converted 钩子，供积分/分销应用自行发放奖励；本应用不内置结算"
+                },
+                {
+                    "name": "parent_param",
+                    "title": "上级链接参数名",
+                    "type": "text",
+                    "value": "from",
+                    "tips": "业务页面 URL 中标识上级分享码的参数名，如 ?from=AbCd1234"
+                }
+            ]
+        },
+        {
+            "name": "track_settings",
+            "title": "统计与报表",
+            "items": [
+                {
+                    "name": "uv_dedup_enabled",
+                    "title": "启用 UV 去重",
+                    "type": "switch",
+                    "value": "1",
+                    "tips": "按 md5(ip|UA|日期) 标识访客，同一访客当天多次落地只计一次独立访客"
+                },
+                {
+                    "name": "utm_enabled",
+                    "title": "自动附加 UTM 参数",
+                    "type": "switch",
+                    "value": "1",
+                    "tips": "在分享落地链接附加 utm_source / utm_medium / utm_campaign，便于站外导流来源分析"
+                },
+                {
+                    "name": "utm_source",
+                    "title": "UTM 来源标识",
+                    "type": "text",
+                    "value": "share",
+                    "tips": "写进 utm_source 的固定值"
+                },
+                {
+                    "name": "aggregate_enabled",
+                    "title": "启用日聚合",
+                    "type": "switch",
+                    "value": "1",
+                    "tips": "事件写入时同步累加日聚合表，报表查询优先读聚合表"
+                },
+                {
+                    "name": "report_default_days",
+                    "title": "报表默认时间范围",
+                    "type": "number",
+                    "value": "30",
+                    "tips": "单位：天，数据看板默认展示的近 N 天数据"
+                }
+            ]
+        }
+    ],
+    "permissions": [
+        { "code": "cmspro.share.manage", "name": "分享管理" },
+        { "code": "cmspro.share.channel.manage", "name": "渠道管理" },
+        { "code": "cmspro.share.scene.manage", "name": "场景管理" },
+        { "code": "cmspro.share.link.view", "name": "查看分享记录" },
+        { "code": "cmspro.share.stat.view", "name": "查看数据报表" },
+        { "code": "cmspro.share.settings.manage", "name": "应用设置" }
+    ],
+    "runtime_files": []
+}

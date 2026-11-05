@@ -1,0 +1,15 @@
+# 应用独立仓库忽略规则
+.env
+.env.*
+*.exe
+*.bak
+*.tmp
+*.log
+Thumbs.db
+.DS_Store
+venv/
+.venv/
+node_modules/
+storage/
+.idea/
+.vscode/
