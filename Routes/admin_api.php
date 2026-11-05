@@ -2,6 +2,7 @@
 
 use App\Apps\CmsproShare\Controllers\Admin\ChannelController;
 use App\Apps\CmsproShare\Controllers\Admin\LinkController;
+use App\Apps\CmsproShare\Controllers\Admin\PreviewController;
 use App\Apps\CmsproShare\Controllers\Admin\SceneController;
 use App\Apps\CmsproShare\Controllers\Admin\SettingController;
 use App\Apps\CmsproShare\Controllers\Admin\StatController;
@@ -24,3 +25,6 @@ Route::get('/stats', [StatController::class, 'apiStats']);
 
 Route::get('/settings', [SettingController::class, 'apiList']);
 Route::post('/settings', [SettingController::class, 'apiSave']);
+
+Route::get('/preview/scenes', [PreviewController::class, 'apiScenes']);
+Route::post('/preview', [PreviewController::class, 'apiBuild']);

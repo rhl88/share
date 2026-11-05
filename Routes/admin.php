@@ -2,6 +2,7 @@
 
 use App\Apps\CmsproShare\Controllers\Admin\ChannelController;
 use App\Apps\CmsproShare\Controllers\Admin\LinkController;
+use App\Apps\CmsproShare\Controllers\Admin\PreviewController;
 use App\Apps\CmsproShare\Controllers\Admin\SceneController;
 use App\Apps\CmsproShare\Controllers\Admin\SettingController;
 use App\Apps\CmsproShare\Controllers\Admin\StatController;
@@ -14,3 +15,4 @@ Route::get('/scenes', [SceneController::class, 'index']);
 Route::get('/links', [LinkController::class, 'index']);
 Route::get('/stats', [StatController::class, 'index']);
 Route::get('/settings', [SettingController::class, 'index']);
+Route::get('/preview', [PreviewController::class, 'index']);

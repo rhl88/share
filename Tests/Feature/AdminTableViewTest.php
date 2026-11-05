@@ -24,6 +24,7 @@ class AdminTableViewTest extends ShareTestCase
             'cmspro.share::Admin.scenes.index' => [1, true],
             'cmspro.share::Admin.links.index' => [1, true],
             'cmspro.share::Admin.stats.index' => [3, false],
+            'cmspro.share::Admin.preview.index' => [1, false],
             'cmspro.share::User.shares.index' => [2, true],
         ];
     }

@@ -43,9 +43,9 @@ CmsproShare/
 ├── Services/                     # ShareConfig / Channel / Scene / Share / Track / Stat / Wechat / Poster
 ├── Models/                       # 6 张表对应模型
 ├── Migrations/                   # 6 个幂等建表迁移
-├── Views/                        # Admin / User / Home 三端 Blade 视图
+├── Views/                        # Admin（含 preview）/ User / Home 三端 Blade 视图
 ├── Assets/                       # js/share.js 前端 SDK、css/share.css
-├── Tests/                        # 应用级测试（37 个用例 / 285 断言）
+├── Tests/                        # 应用级测试（45 个用例 / 324 断言）
 ├── sql/                          # V1.0.0__init_share_tables.sql 建表与回滚脚本
 └── doc/                          # 三类应用文档
 ```
@@ -83,5 +83,5 @@ $hooks->registerFilter('share.types', function (array $types): array {
 ```bash
 # 在 code 目录执行（自动锁定 sqlite :memory:）
 php artisan test app/Apps/CmsproShare/Tests
-# 结果：37 passed (285 assertions)
+# 结果：45 passed (324 assertions)
 ```

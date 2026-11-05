@@ -41,6 +41,8 @@
 
 > `Install.php` 带迁移兜底与配置三向同步：重复安装或升级不会重复建表、不会覆盖已保存的配置值。
 
+> 后台菜单由框架在安装 / 升级时按 `manifest.json` 的 `menus` 同步。新增「分享预览」菜单后，已安装的站点需执行一次应用升级或本地覆盖安装（同版本走覆盖安装）才会出现；若通过应用市场升级，目标版本必须高于当前版本，需相应提升 `version`。
+
 ### 2.2 验证安装
 
 | 检查项 | 预期结果 |
@@ -49,7 +51,7 @@
 | 数据表 | 存在 `app_cmspro_share_channels` / `scenes` / `links` / `events` / `invites` / `daily_stats` 六张表 |
 | 渠道种子 | `app_cmspro_share_channels` 有 22 条 `is_builtin=1` 记录 |
 | 配置项 | `config_items` 中 `app_cmspro_share_%` 前缀共 27 项 |
-| 菜单 | 后台出现「一键分享」分组及 5 个子菜单；用户端出现「我的分享」 |
+| 菜单 | 后台出现「一键分享」分组及 6 个子菜单；用户端出现「我的分享」 |
 
 手工核对 SQL：
 
@@ -71,6 +73,7 @@ SELECT COUNT(*) FROM config_items WHERE code LIKE 'app_cmspro_share_%';
 | 分享记录 | `/admin/cmspro/share/links` | 按短码/标题/对象ID/场景检索，查看点击、落地、UV、转化 |
 | 数据看板 | `/admin/cmspro/share/stats` | 漏斗、渠道效果、场景效果、热门链接、趋势 |
 | 应用设置 | `/admin/cmspro/share/settings` | 按 4 个配置分组 Tab 切换，共 27 项配置，即时生效 |
+| 分享预览 | `/admin/cmspro/share/preview` | 选场景 + 对象 ID 生成真实分享链接，预览分享面板、渠道链接、二维码、海报与中转落地 |
 
 ### 3.2 内置渠道清单
 
@@ -169,6 +172,8 @@ SELECT COUNT(*) FROM config_items WHERE code LIKE 'app_cmspro_share_%';
 | GET/POST | `/api/admin/cmspro/share/links`、`/links/{id}`、`/links/{id}/toggle` | 分享记录 |
 | GET | `/api/admin/cmspro/share/stats?start=&end=` | 看板数据 |
 | GET/POST | `/api/admin/cmspro/share/settings` | 配置读取与保存 |
+| GET | `/api/admin/cmspro/share/preview/scenes` | 预览可选场景（演示场景置顶 + 业务应用注册的启用场景） |
+| POST | `/api/admin/cmspro/share/preview` | 按 `scene_code` + `target_id` 生成一次真实分享，返回短码、渠道、SDK 与能力开关 |
 
 ### 4.3 用户端
 
@@ -221,7 +226,7 @@ CmsproShare/
 ├── Migrations/                   # 6 个幂等建表迁移
 ├── Views/                        # Admin / User / Home 三端视图
 ├── Assets/                       # js/share.js（前端 SDK）+ css/share.css
-├── Tests/                        # 应用级测试（37 个用例）
+├── Tests/                        # 应用级测试（45 个用例）
 ├── doc/                          # 特性清单 / 使用指南 / 扩展指南
 └── sql/V1.0.0__init_share_tables.sql
 ```
@@ -255,6 +260,12 @@ A：本应用不设强依赖。若要把中转链接换成 `cmspro.qrlink` 短�
 A：按《应用视图规范》7.5 节处理。本应用后台与用户端所有 Layui 表格均满足三点：至少保留一列 `minWidth` 弹性列（不设 `width`）、设置 `skin: false` 统一 `th`/`td` 盒模型、用完整 `page` 配置对象替代 `page: true` 简写；每张表显式声明 `id`，数据看板三张表只在初始化时 `render` 一次，查询时用 `table.reload` 更新，避免叠加多套表头容器。回归用例见 `Tests/Feature/AdminTableViewTest.php`。若浏览器仍显示旧布局，请先强制刷新清掉缓存的旧视图/CSS。
 
 > 注意：本应用 `links` / `mine` / `invites` 接口读取的分页参数名是 `limit`，不是框架后台列表的 `per_page` 约定，改造列表时不要照搬 `request.limitName` 映射。
+
+**Q：分享预览会影响数据看板吗？**
+A：会。预览采用完整真实生成，每次点击「生成预览」都会写入一条 `app_cmspro_share_links` 记录（`sharer_type = preview`）和一条 `create` 事件，并计入分享记录与漏斗统计；点击面板渠道按钮会上报 `click`，打开中转链接会上报 `landing`。如只需看样式，请勿反复生成。没有任何业务应用注册 `share.types` 时，可选内置的「预览演示内容」场景，它由请求内钩子注入、不落库，但生成的分享链接仍是真实的。
+
+**Q：二维码 / 海报在预览页没显示？**
+A：分别受 `qrcode_enabled`、`poster_enabled` 控制，在「应用设置 → 渠道与高级能力」开启后重新生成预览即可。海报依赖真实短码，只有真实生成模式下可用。
 
 ---
 

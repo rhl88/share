@@ -68,6 +68,13 @@
                     "icon": "fa fa-cog",
                     "path": "/admin/cmspro/share/settings",
                     "order": 5
+                },
+                {
+                    "code": "admin_cmspro_share_preview",
+                    "title": "分享预览",
+                    "icon": "fa fa-eye",
+                    "path": "/admin/cmspro/share/preview",
+                    "order": 6
                 }
             ]
         }
