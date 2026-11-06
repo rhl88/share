@@ -5,8 +5,8 @@
 | 应用 ID | `cmspro.share` |
 | 应用名称 | 一键分享 |
 | 应用版本 | 1.0.0 |
-| 文档版本 | 1.0.0 |
-| 更新日期 | 2026-11-05 |
+| 文档版本 | 1.0.1 |
+| 更新日期 | 2026-11-06 |
 | 运行依赖 | PHP >= 8.3、CmsPro >= 5.0.0 |
 | 应用依赖 | 无（可独立安装；可选联动 `cmspro.qrlink`、`cmspro.sitestat`） |
 | 官方地址 | https://www.cmspro.cn/apps/cmspro.share |
@@ -27,6 +27,22 @@
 - 生成 → 点击 → 落地 → 转化四段漏斗、UV 去重、UTM 参数、日聚合与多维报表
 - 微信 JS-SDK 签名、SVG 二维码与海报（零 GD 依赖）、全部能力由后台 27 项配置自由开关
 
+## 应用截图
+
+> 截图来源：[官方应用页 · cmspro.share](https://www.cmspro.cn/apps/cmspro.share)（官网标注 v1.0.0）。每次发布与更新必须核对本节截图与官网「应用截图」是否一致，不一致时以官网为准同步更新。
+
+![应用截图 1](https://www.cmspro.cn/uploads/appstore/2026/11/06/AdsW9kwJcwDZ34Ys5E546PW9dMeDxNbyAfpDZ1qq.png)
+![应用截图 2](https://www.cmspro.cn/uploads/appstore/2026/11/06/ize5zA9vbgccAyp3oOdbXp6UE7OECy48Ep46svSC.png)
+![应用截图 3](https://www.cmspro.cn/uploads/appstore/2026/11/06/gHpxHY1oerXBdKkG6qWJKV0zmt4bCxkvcWKPQX1K.png)
+![应用截图 4](https://www.cmspro.cn/uploads/appstore/2026/11/06/Y6LuUQTPpop4VlSt6tpWa9gGRV6q3fwz2Pq3dfLq.png)
+![应用截图 5](https://www.cmspro.cn/uploads/appstore/2026/11/06/GUhm7GrI2vTQwbuf1Kny2EKpGmIzrDB2bVhJN2LY.png)
+![应用截图 6](https://www.cmspro.cn/uploads/appstore/2026/11/06/4R7xU8ga1iRioigykGMQSWgX2xLz26mzqQQpC40C.png)
+![应用截图 7](https://www.cmspro.cn/uploads/appstore/2026/11/06/yvHLKu3wpAYrnu9nUlGQaCihdUuOmORojBnsjYkw.png)
+![应用截图 8](https://www.cmspro.cn/uploads/appstore/2026/11/06/IdOZdrqxpUy54YnwY20PDchrTsa9jD9Oatyxyydq.png)
+![应用截图 9](https://www.cmspro.cn/uploads/appstore/2026/11/06/15TsrpCX19ZFN494djvOeFpfC2Jvu78yX6Ek9oYM.png)
+![应用截图 10](https://www.cmspro.cn/uploads/appstore/2026/11/06/xZ7rSaGFpNaxk7j6kwNB6WpOfPkf4QxyiIfNUaau.png)
+![应用截图 11](https://www.cmspro.cn/uploads/appstore/2026/11/06/odjWBv80QjF0UtBmIlcoCUsXCQQ2q0UuYHTOVpHK.png)
+
 ## 目录结构
 
 ```
@@ -45,7 +61,7 @@ CmsproShare/
 ├── Migrations/                   # 6 个幂等建表迁移
 ├── Views/                        # Admin（含 preview）/ User / Home 三端 Blade 视图
 ├── Assets/                       # js/share.js 前端 SDK、css/share.css（按钮样式与渠道图标品牌色）
-├── Tests/                        # 应用级测试（59 个用例 / 403 断言）
+├── Tests/                        # 应用级测试（59 个用例 / 406 断言）
 ├── sql/                          # V1.0.0__init_share_tables.sql 建表与回滚脚本
 └── doc/                          # 三类应用文档
 ```
@@ -83,5 +99,5 @@ $hooks->registerFilter('share.types', function (array $types): array {
 ```bash
 # 在 code 目录执行（自动锁定 sqlite :memory:）
 php artisan test app/Apps/CmsproShare/Tests
-# 结果：59 passed (403 assertions)
+# 结果：59 passed (406 assertions)
 ```
