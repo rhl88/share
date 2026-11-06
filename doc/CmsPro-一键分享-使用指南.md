@@ -226,7 +226,7 @@ CmsproShare/
 ├── Migrations/                   # 6 个幂等建表迁移
 ├── Views/                        # Admin / User / Home 三端视图
 ├── Assets/                       # js/share.js（前端 SDK）+ css/share.css（按钮样式与渠道图标品牌色）
-├── Tests/                        # 应用级测试（58 个用例）
+├── Tests/                        # 应用级测试（59 个用例）
 ├── doc/                          # 特性清单 / 使用指南 / 扩展指南
 └── sql/V1.0.0__init_share_tables.sql
 ```

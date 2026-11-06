@@ -9,6 +9,14 @@
     <link rel="stylesheet" href="{{ asset('Admin/css/admin.css') }}">
     <link rel="stylesheet" href="{{ asset('Admin/css/variables.css') }}">
     <link rel="stylesheet" href="{{ asset('Admin/css/reset.css') }}">
+<style>
+    /* 详情弹层：分组两列小表格，左列字段名右列值 */
+    .share-detail-table { width: 100%; margin: 0; table-layout: fixed; }
+    .share-detail-table td { padding: 7px 12px; font-size: 13px; word-break: break-all; }
+    .share-detail-table .detail-label { width: 96px; color: #666; background: #fafafa; }
+    .share-detail-table .detail-group td { color: #16b777; font-weight: 600; background: #f8f8f8; padding: 6px 12px; }
+    .share-detail-table a { color: #01aaed; }
+</style>
 </head>
 <body>
 <div class="pear-container">
@@ -90,13 +98,90 @@ layui.use(['table', 'layer', 'jquery'], function () {
         }
     });
 
+    // 详情弹层：把接口数据渲染为分组可读表格（不得直接输出原始 JSON 文本）
+    function esc(s) {
+        return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+            return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+        });
+    }
+
+    function detailRow(label, value) {
+        return '<tr><td class="detail-label">' + label + '</td><td>' + (value == null || value === '' ? '-' : value) + '</td></tr>';
+    }
+
+    function detailGroup(title) {
+        return '<tr class="detail-group"><td colspan="2">' + title + '</td></tr>';
+    }
+
+    function detailLink(url) {
+        if (!url) { return '-'; }
+        return '<a href="' + esc(url) + '" target="_blank" rel="noopener">' + esc(url) + '</a>';
+    }
+
+    function sharerTypeName(code) {
+        return { guest: '游客', user: '前台用户', admin: '管理员' }[code] || esc(code || '-');
+    }
+
+    function formatParams(raw) {
+        if (!raw) { return '无'; }
+        try {
+            var parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+            var parts = [];
+            Object.keys(parsed).forEach(function (k) { parts.push(esc(k) + '：' + esc(parsed[k])); });
+            return parts.length ? parts.join('<br>') : '无';
+        } catch (e) {
+            return esc(raw);
+        }
+    }
+
+    function shareDetailHtml(d) {
+        var html = '<table class="layui-table share-detail-table" lay-size="sm" lay-skin="line"><tbody>';
+
+        html += detailGroup('基本信息');
+        html += detailRow('短码', esc(d.code));
+        html += detailRow('状态', d.status === 1
+            ? '<span class="layui-badge layui-bg-green">正常</span>'
+            : '<span class="layui-badge layui-bg-gray">已停用</span>');
+        html += detailRow('分享标题', esc(d.title));
+        html += detailRow('摘要', esc(d.summary));
+        html += detailRow('场景', esc(d.scene_code));
+        html += detailRow('对象 ID', esc(d.target_id));
+        html += detailRow('目标链接', detailLink(d.target_url));
+        html += detailRow('生成渠道', esc(d.channel_code) || '-');
+        html += detailRow('分享者', sharerTypeName(d.sharer_type) + (d.sharer_id != null ? '（ID：' + esc(d.sharer_id) + '）' : ''));
+        html += detailRow('上级分享码', esc(d.parent_code));
+
+        html += detailGroup('数据统计');
+        html += detailRow('分享点击', d.click_count);
+        html += detailRow('落地访问', d.visit_count);
+        html += detailRow('独立访客', d.uv_count);
+        html += detailRow('转化次数', d.convert_count);
+
+        html += detailGroup('时间与扩展');
+        html += detailRow('创建时间', esc(d.create_time));
+        html += detailRow('更新时间', esc(d.update_time));
+        html += detailRow('失效时间', d.expire_time ? esc(d.expire_time) : '长期有效');
+        html += detailRow('扩展参数', formatParams(d.params));
+
+        return html + '</tbody></table>';
+    }
+
     table.on('tool(linkTable)', function (obj) {
         if (obj.event === 'toggle') {
             $.post(apiBase + '/' + obj.data.id + '/toggle', {}, function () { table.reload('linkTable'); });
         } else if (obj.event === 'detail') {
             $.getJSON(apiBase + '/' + obj.data.id, function (res) {
-                layer.open({ type: 1, title: '分享详情', area: ['600px', '460px'],
-                    content: '<pre style="padding:16px;white-space:pre-wrap;">' + JSON.stringify(res.data, null, 2) + '</pre>' });
+                if (!res || res.code !== 0 || !res.data) {
+                    layer.msg((res && res.message) || '详情获取失败', { icon: 2 });
+                    return;
+                }
+                layer.open({
+                    type: 1,
+                    title: '分享详情 · ' + res.data.code,
+                    area: ['680px', '560px'],
+                    maxWidth: 680,
+                    content: '<div style="padding:12px 4px 4px;">' + shareDetailHtml(res.data) + '</div>'
+                });
             });
         }
     });

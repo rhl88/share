@@ -126,6 +126,19 @@ class AdminTableViewTest extends ShareTestCase
         $this->assertStringNotContainsString('flex: 1 1 160px', $html, '固定 160px 基准会在窄容器下把末位卡片挤出首行');
     }
 
+    public function test_link_detail_popup_renders_readable_rows(): void
+    {
+        $html = $this->renderView('cmspro.share::Admin.links.index');
+
+        // 详情弹层必须渲染为分组可读表格，禁止直接 JSON.stringify 输出
+        $this->assertStringNotContainsString('JSON.stringify', $html, '详情弹层不得直接输出原始 JSON');
+        $this->assertStringContainsString('shareDetailHtml', $html, '详情弹层需由结构化渲染函数生成');
+        $this->assertStringContainsString('基本信息', $html, '详情需按「基本信息」分组');
+        $this->assertStringContainsString('数据统计', $html, '详情需按「数据统计」分组');
+        $this->assertStringContainsString('目标链接', $html, '目标链接需以可读字段名展示');
+        $this->assertStringContainsString('长期有效', $html, '过期时间为空时需展示「长期有效」');
+    }
+
     public function test_pagination_parameter_stays_limit(): void
     {
         foreach ([
