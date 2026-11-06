@@ -65,7 +65,7 @@
             <div class="layui-card-header">分享面板（真实交互，可点击体验）</div>
             <div class="layui-card-body">
                 <div id="sharePanel"></div>
-                <p class="share-hint">按钮图标取自渠道 icon 配置，未配置时回退通用分享图标。按钮行为由前端 SDK 接管：链接型渠道打开分享端点，复制链接 / 二维码 / 海报 / 原生分享按渠道 mode 执行；点击会上报 click 事件。</p>
+                <p class="share-hint">按钮图标取自渠道 icon 配置，未配置时回退通用分享图标。按钮行为由前端 SDK 接管：链接型渠道打开分享端点，复制链接 / 二维码 / 海报 / 原生分享按渠道 mode 执行；在电脑上点击「微信好友 / 朋友圈」会弹出扫码分享层（手机扫码转发 + 复制文字 / 链接）；点击会上报 click 事件。</p>
             </div>
         </div>
 

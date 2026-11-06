@@ -152,6 +152,28 @@
     cursor: pointer;
 }
 
+/* 微信扫码弹层：标题与复制按钮 */
+.cmspro-share-wechat-title {
+    margin: 0 0 12px;
+    color: #0f172a;
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.cmspro-share-copy-btn {
+    padding: 7px 20px;
+    border: 1px solid #07c160;
+    border-radius: 6px;
+    background: #07c160;
+    color: #fff;
+    font-size: 13px;
+    cursor: pointer;
+    margin-right: 8px;
+    font-family: inherit;
+}
+
+.cmspro-share-copy-btn:hover { background: #06ad56; }
+
 @media (prefers-reduced-motion: reduce) {
     .cmspro-share-btn,
     .cmspro-share-toast { transition: none; }

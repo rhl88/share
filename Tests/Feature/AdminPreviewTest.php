@@ -121,6 +121,22 @@ class AdminPreviewTest extends ShareTestCase
         $this->assertStringContainsString('[data-channel="wechat"] i', $css, '按钮图标需按渠道着色，便于辨识');
     }
 
+    public function test_wechat_pc_fallback_offers_scan_qrcode_and_copy_text(): void
+    {
+        // PC（非微信环境）点击「微信好友 / 朋友圈」必须弹出扫码分享层，
+        // 本地电脑未登录微信时也能用手机扫码打开中转链接完成分享（F-微信弹层）
+        $js = (string) file_get_contents(base_path('app/Apps/CmsproShare/Assets/js/share.js'));
+        $css = (string) file_get_contents(base_path('app/Apps/CmsproShare/Assets/css/share.css'));
+
+        $this->assertStringContainsString('wechatScanPanel', $js, 'PC 端微信渠道需弹出扫码分享层');
+        $this->assertStringContainsString('/api/cmspro/share/qrcode', $js, '弹层二维码需复用公开二维码端点');
+        $this->assertStringContainsString('复制文字', $js, '弹层需提供复制文字（标题+链接）能力');
+        $this->assertStringContainsString('复制链接', $js, '弹层需提供复制链接能力');
+
+        $this->assertStringContainsString('.cmspro-share-wechat-title', $css, '弹层需有标题样式');
+        $this->assertStringContainsString('.cmspro-share-copy-btn', $css, '弹层需有复制按钮样式');
+    }
+
     public function test_scene_list_includes_demo_and_registered_scenes(): void
     {
         $this->withoutMiddleware();

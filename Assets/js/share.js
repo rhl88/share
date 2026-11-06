@@ -41,22 +41,23 @@
         }, 2600);
     }
 
-    function copyText(text) {
+    function copyText(text, message) {
+        var ok = message || '链接已复制，去粘贴分享吧';
         if (navigator.clipboard && window.isSecureContext) {
-            navigator.clipboard.writeText(text).then(function () { toast('链接已复制，去粘贴分享吧'); }, function () { fallbackCopy(text); });
+            navigator.clipboard.writeText(text).then(function () { toast(ok); }, function () { fallbackCopy(text, ok); });
         } else {
-            fallbackCopy(text);
+            fallbackCopy(text, ok);
         }
     }
 
-    function fallbackCopy(text) {
+    function fallbackCopy(text, message) {
         var input = document.createElement('textarea');
         input.value = text;
         input.style.position = 'fixed';
         input.style.opacity = '0';
         document.body.appendChild(input);
         input.select();
-        try { document.execCommand('copy'); toast('链接已复制，去粘贴分享吧'); }
+        try { document.execCommand('copy'); toast(message || '链接已复制，去粘贴分享吧'); }
         catch (e) { toast('复制失败，请长按链接手动复制'); }
         document.body.removeChild(input);
     }
@@ -78,6 +79,64 @@
         close.textContent = '关闭';
         close.onclick = function () { document.body.removeChild(mask); };
         panel.appendChild(img); panel.appendChild(tip); panel.appendChild(close);
+        mask.appendChild(panel);
+        mask.onclick = function (e) { if (e.target === mask) { document.body.removeChild(mask); } };
+        document.body.appendChild(mask);
+    }
+
+    /**
+     * PC 端微信弹层：本地电脑未登录微信时，用手机扫码打开中转链接完成分享；
+     * 同时提供复制文字（标题+链接）/ 复制链接，便于粘贴给微信好友或朋友圈配文
+     */
+    function wechatScanPanel(holder, button) {
+        var channelName = button.getAttribute('title') || '微信';
+        var isMoments = button.getAttribute('data-channel') === 'moments';
+        var href = holder.getAttribute('data-share-url') || location.href;
+        var title = holder.getAttribute('data-share-title') || document.title;
+
+        var mask = document.createElement('div');
+        mask.className = 'cmspro-share-mask';
+
+        var panel = document.createElement('div');
+        panel.className = 'cmspro-share-panel';
+
+        var head = document.createElement('h3');
+        head.className = 'cmspro-share-wechat-title';
+        head.textContent = channelName + ' · 扫码分享';
+
+        var img = document.createElement('img');
+        img.src = '/api/cmspro/share/qrcode?data=' + encodeURIComponent(href);
+        img.alt = '扫码分享二维码';
+
+        var tip = document.createElement('p');
+        tip.textContent = isMoments
+            ? '手机微信扫码打开分享内容，再转发到朋友圈'
+            : '手机微信扫码打开分享内容，再转发给微信好友';
+
+        var copyTextBtn = document.createElement('button');
+        copyTextBtn.type = 'button';
+        copyTextBtn.className = 'cmspro-share-copy-btn';
+        copyTextBtn.textContent = '复制文字';
+        copyTextBtn.onclick = function () { copyText(title + '\n' + href, '文字已复制，去粘贴分享吧'); };
+
+        var copyLinkBtn = document.createElement('button');
+        copyLinkBtn.type = 'button';
+        copyLinkBtn.className = 'cmspro-share-close';
+        copyLinkBtn.textContent = '复制链接';
+        copyLinkBtn.onclick = function () { copyText(href); };
+
+        var close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'cmspro-share-close';
+        close.textContent = '关闭';
+        close.onclick = function () { document.body.removeChild(mask); };
+
+        panel.appendChild(head);
+        panel.appendChild(img);
+        panel.appendChild(tip);
+        panel.appendChild(copyTextBtn);
+        panel.appendChild(copyLinkBtn);
+        panel.appendChild(close);
         mask.appendChild(panel);
         mask.onclick = function (e) { if (e.target === mask) { document.body.removeChild(mask); } };
         document.body.appendChild(mask);
@@ -113,7 +172,8 @@
             return;
         }
 
-        copyText(holder.getAttribute('data-share-url') || location.href);
+        // PC 端（未打开微信）：弹层提供扫码 + 复制文字/链接
+        wechatScanPanel(holder, button);
     }
 
     function handleClick(button) {

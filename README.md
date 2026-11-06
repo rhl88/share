@@ -45,7 +45,7 @@ CmsproShare/
 ├── Migrations/                   # 6 个幂等建表迁移
 ├── Views/                        # Admin（含 preview）/ User / Home 三端 Blade 视图
 ├── Assets/                       # js/share.js 前端 SDK、css/share.css（按钮样式与渠道图标品牌色）
-├── Tests/                        # 应用级测试（54 个用例 / 375 断言）
+├── Tests/                        # 应用级测试（55 个用例 / 381 断言）
 ├── sql/                          # V1.0.0__init_share_tables.sql 建表与回滚脚本
 └── doc/                          # 三类应用文档
 ```
@@ -83,5 +83,5 @@ $hooks->registerFilter('share.types', function (array $types): array {
 ```bash
 # 在 code 目录执行（自动锁定 sqlite :memory:）
 php artisan test app/Apps/CmsproShare/Tests
-# 结果：54 passed (375 assertions)
+# 结果：55 passed (381 assertions)
 ```
