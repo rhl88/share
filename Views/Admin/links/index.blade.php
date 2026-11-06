@@ -13,7 +13,9 @@
     /* 详情弹层：分组两列小表格，左列字段名右列值 */
     .share-detail-table { width: 100%; margin: 0; table-layout: fixed; }
     .share-detail-table td { padding: 7px 12px; font-size: 13px; word-break: break-all; }
-    .share-detail-table .detail-label { width: 96px; color: #666; background: #fafafa; }
+    /* fixed 布局下首行是 colspan=2 的分组行，列宽必须由 colgroup 显式给出，否则两列五五开 */
+    .share-detail-table .detail-col-label { width: 86px; }
+    .share-detail-table .detail-label { padding: 7px 10px; color: #666; background: #fafafa; white-space: nowrap; }
     .share-detail-table .detail-group td { color: #16b777; font-weight: 600; background: #f8f8f8; padding: 6px 12px; }
     .share-detail-table a { color: #01aaed; }
 </style>
@@ -135,7 +137,8 @@ layui.use(['table', 'layer', 'jquery'], function () {
     }
 
     function shareDetailHtml(d) {
-        var html = '<table class="layui-table share-detail-table" lay-size="sm" lay-skin="line"><tbody>';
+        var html = '<table class="layui-table share-detail-table" lay-size="sm" lay-skin="line">'
+            + '<colgroup><col class="detail-col-label"><col></colgroup><tbody>';
 
         html += detailGroup('基本信息');
         html += detailRow('短码', esc(d.code));

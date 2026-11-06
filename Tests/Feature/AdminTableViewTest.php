@@ -137,6 +137,9 @@ class AdminTableViewTest extends ShareTestCase
         $this->assertStringContainsString('数据统计', $html, '详情需按「数据统计」分组');
         $this->assertStringContainsString('目标链接', $html, '目标链接需以可读字段名展示');
         $this->assertStringContainsString('长期有效', $html, '过期时间为空时需展示「长期有效」');
+        $this->assertStringContainsString('<colgroup>', $html, 'fixed 布局下首行为 colspan 分组行，必须用 colgroup 显式定义列宽');
+        $this->assertStringContainsString('width: 86px', $html, '详情左列字段名需收窄（96px/五五开时空余过多）');
+        $this->assertStringContainsString('.detail-col-label', $html, '左列需有独立列宽样式类');
     }
 
     public function test_pagination_parameter_stays_limit(): void
