@@ -22,19 +22,52 @@
                     <ul class="layui-tab-title" id="settingsTabTitle"></ul>
                     <div class="layui-tab-content" id="settingsBody"></div>
                 </div>
-                <div class="share-settings-footer">
-                    <button type="submit" class="layui-btn" lay-submit lay-filter="saveSettings"><i class="fa fa-save"></i> 保存设置</button>
-                    <button type="button" class="layui-btn layui-btn-primary" id="btnReset">重新加载</button>
-                </div>
             </form>
         </div>
     </div>
 </div>
 
+{{--
+    底部操作栏放在 body 直接子级（与 .pear-container 同级），不嵌在 form / card 内：
+    任一祖先若形成层叠上下文或 containing block，都会困住 fixed 定位与低 z-index，
+    项目内其他设置页（CmsproLedger / CmsproAccountsync 等）的 bottom-bar 同样是 body 直接子级。
+    按钮改用 click 事件收集表单（lay-submit 要求按钮在 form 内，移出后不可用），
+    收集逻辑与原先 form.on('submit') 内完全一致。
+--}}
+<div class="share-settings-footer">
+    <button type="button" class="layui-btn" id="btnSave"><i class="fa fa-save"></i> 保存设置</button>
+    <button type="button" class="layui-btn layui-btn-primary" id="btnReset">重新加载</button>
+</div>
+
 <style>
-    .share-settings-footer { position: fixed; right: 24px; bottom: 0; left: 24px; z-index: 10; padding: 12px 20px; text-align: right; background: #fff; border-top: 1px solid #eee; }
+    /*
+     * 底部操作栏：浮动在右下角的独立按钮组（非通栏底条）。
+     *
+     * 设计要点：
+     * 1. right/bottom 定位 + left:auto + 宽度自适应内容，使其成为右下角的浮动块，
+     *    不横跨整行，避免遮挡表单内容、也不被通栏元素覆盖；
+     * 2. z-index:999 高于 layui 组件层（.layui-tab-bar 为 10、表格浮层最高 1000 以下），
+     *    与项目内其他设置页（CmsproAccountsync 等）取值一致；
+     * 3. box-shadow + 圆角 + 白底，强化「浮动」视觉，与页面内容明确分层；
+     * 4. bottom:24px 留出间隙，既不与视口底边粘连，也避开父窗口 layui-footer
+     *    （44px 高、z-index 990）可能压住 iframe 下缘的区域。
+     */
+    .share-settings-footer {
+        position: fixed; right: 24px; bottom: 24px; left: auto;
+        z-index: 999;
+        display: flex; align-items: center; gap: 10px;
+        padding: 10px 14px;
+        background: #fff;
+        border: 1px solid #e6e6e6;
+        border-radius: 6px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, .12);
+    }
+    .share-settings-footer .layui-btn { min-width: 110px; margin: 0; }
+
+    /* 页面底部留白：保证滚到最后一屏时，末尾表单项不被浮动按钮组压住 */
+    .pear-container { padding: 15px; padding-bottom: 90px; }
+
     .share-setting-tips { color: #999; font-size: 12px; line-height: 1.8; padding: 4px 0 12px 110px; }
-    #settingsBody { padding-bottom: 70px; }
     .share-tab-panel { padding: 18px 4px 8px; }
     .share-tab-empty { padding: 40px 0; color: #999; text-align: center; }
 </style>
@@ -110,9 +143,11 @@ layui.use(['form', 'layer', 'jquery', 'element'], function () {
         });
     }
 
+    // 操作栏已移出 form（作为 body 直接子级，避免祖先层叠上下文困住 fixed 定位），
+    // 故改用 click 事件收集；lay-submit 要求按钮在 form 内，此处不再适用。
     // Tab 只切换显示，所有字段仍在同一个 form 内，保存时整表收集；
     // 若只收集当前面板，其余分组的配置会被漏提交。
-    form.on('submit(saveSettings)', function () {
+    $('#btnSave').on('click', function () {
         var settings = {};
         $('#settingsForm input[type=checkbox]').each(function () {
             if (this.name) { settings[this.name] = this.checked ? '1' : '0'; }
@@ -122,7 +157,6 @@ layui.use(['form', 'layer', 'jquery', 'element'], function () {
             if (this.name) { settings[this.name] = $(this).val(); }
         });
         $.post(apiBase, { settings: settings }, function (res) { layer.msg(res.message || '已保存'); });
-        return false;
     });
 
     $('#btnReset').on('click', load);
