@@ -240,6 +240,30 @@ class ShareFlowTest extends ShareTestCase
         $this->assertNotContains('weibo', array_column($channels, 'code'));
     }
 
+    public function test_分享面板支持纯图标纯文字与弹出层布局(): void
+    {
+        $this->registerScene();
+
+        $icon = share_render('blog.article', 1, ['layout' => 'icon']);
+        $this->assertStringContainsString('data-layout="icon"', $icon, '纯图标布局需输出 data-layout 标记');
+        $this->assertStringContainsString('<span>', $icon, 'icon 布局由 CSS 控制文字显隐，DOM 保留 span 以支持无障碍');
+
+        $text = share_render('blog.article', 2, ['layout' => 'text']);
+        $this->assertStringContainsString('data-layout="text"', $text, '纯文字布局需输出 data-layout 标记');
+
+        $popup = share_render('blog.article', 3, ['layout' => 'popup']);
+        $this->assertStringContainsString('data-layout="popup"', $popup, '弹出层布局需输出 data-layout 标记');
+        $this->assertStringContainsString('cmspro-share-trigger', $popup, '弹出层布局需输出触发按钮');
+        $this->assertStringContainsString('cmspro-share-popup-body', $popup, '弹出层布局需内置完整按钮组容器');
+        $this->assertStringContainsString('data-channel="wechat"', $popup, '弹出层按钮组需包含全部渠道');
+
+        $default = share_render('blog.article', 4);
+        $this->assertStringContainsString('data-layout="default"', $default, '默认布局输出图标+文字面板');
+
+        $invalid = share_render('blog.article', 5, ['layout' => 'unknown']);
+        $this->assertStringContainsString('data-layout="default"', $invalid, '非法 layout 需回退 default');
+    }
+
     public function test_事件扩展参数可持久化(): void
     {
         $this->registerScene();

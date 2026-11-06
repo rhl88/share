@@ -86,9 +86,15 @@ if (!function_exists('share_render')) {
      *
      * 链接型渠道服务端直出，复制/二维码/原生分享等交互由 Assets/js/share.js 接管。
      *
+     * 展现方式（options['layout']）：
+     *   default - 图标+文字按钮（默认）
+     *   icon    - 纯图标按钮（文字由 CSS 隐藏，DOM 保留 span 以支持无障碍）
+     *   text    - 纯文字按钮（图标由 CSS 隐藏）
+     *   popup   - 「分享」触发按钮，点击弹出完整图标+文字面板
+     *
      * @param string     $sceneCode 场景标识
      * @param string|int $targetId  分享对象ID
-     * @param array      $options   生成选项，另支持 title / button_class / show_label
+     * @param array      $options   生成选项，另支持 title / button_class / show_label / layout
      * @return string HTML，失败时返回 HTML 注释（不破坏页面布局）
      */
     function share_render(string $sceneCode, $targetId, array $options = []): string
@@ -106,10 +112,24 @@ if (!function_exists('share_render')) {
         $data = $result['data'];
         $showLabel = (bool) ($options['show_label'] ?? true);
         $buttonClass = (string) ($options['button_class'] ?? '');
+        $layout = (string) ($options['layout'] ?? 'default');
+        if (!in_array($layout, ['default', 'icon', 'text', 'popup'], true)) {
+            $layout = 'default';
+        }
+        if (!$showLabel && $layout === 'default') {
+            $layout = 'icon';
+        }
 
-        $html = '<div class="cmspro-share" data-share-code="' . e($data['code'])
+        $html = '<div class="cmspro-share" data-layout="' . e($layout)
+            . '" data-share-code="' . e($data['code'])
             . '" data-share-url="' . e($data['url'])
             . '" data-share-title="' . e($data['title']) . '">';
+
+        if ($layout === 'popup') {
+            $html .= '<button type="button" class="cmspro-share-trigger ' . e($buttonClass)
+                . '"><i class="fa fa-share-alt"></i><span>分享</span></button>'
+                . '<div class="cmspro-share-popup-body" hidden>';
+        }
 
         foreach ($data['channels'] as $channel) {
             $mode = e($channel['mode']);
@@ -124,8 +144,12 @@ if (!function_exists('share_render')) {
                 . '" data-href="' . $href
                 . '" title="' . $label . '">'
                 . '<i class="' . $icon . '"></i>'
-                . ($showLabel ? '<span>' . $label . '</span>' : '')
+                . ($showLabel || $layout === 'icon' ? '<span>' . $label . '</span>' : '')
                 . '</button>';
+        }
+
+        if ($layout === 'popup') {
+            $html .= '</div>';
         }
 
         $html .= '</div>';

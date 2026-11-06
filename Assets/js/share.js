@@ -176,9 +176,52 @@
         wechatScanPanel(holder, button);
     }
 
+    /**
+     * popup 布局：点击「分享」触发按钮，弹出完整图标+文字面板
+     * 弹层 DOM 挂在 holder 内，保证弹层内渠道按钮的点击委托仍能取到 holder 上下文
+     */
+    function openPopupPanel(holder) {
+        if (holder.querySelector('.cmspro-share-popup')) { return; }
+        var body = holder.querySelector('.cmspro-share-popup-body');
+        if (!body) { return; }
+
+        var mask = document.createElement('div');
+        mask.className = 'cmspro-share-mask cmspro-share-popup';
+
+        var panel = document.createElement('div');
+        panel.className = 'cmspro-share-panel';
+
+        var head = document.createElement('h3');
+        head.className = 'cmspro-share-wechat-title';
+        head.textContent = '分享到';
+
+        var actions = document.createElement('div');
+        actions.className = 'cmspro-share-popup-actions';
+        actions.innerHTML = body.innerHTML;
+
+        var close = document.createElement('button');
+        close.type = 'button';
+        close.className = 'cmspro-share-close';
+        close.textContent = '关闭';
+        close.onclick = function () { holder.removeChild(mask); };
+
+        panel.appendChild(head);
+        panel.appendChild(actions);
+        panel.appendChild(close);
+        mask.appendChild(panel);
+        mask.onclick = function (e) { if (e.target === mask) { holder.removeChild(mask); } };
+        holder.appendChild(mask);
+    }
+
     function handleClick(button) {
         var holder = button.closest('.cmspro-share');
         if (!holder) { return; }
+
+        if (button.classList.contains('cmspro-share-trigger')) {
+            openPopupPanel(holder);
+            return;
+        }
+
         var code = holder.getAttribute('data-share-code');
         var channel = button.getAttribute('data-channel');
         var mode = button.getAttribute('data-mode');
@@ -222,6 +265,27 @@
 
     function renderButtons(holder, channels) {
         holder.innerHTML = '';
+        var layout = holder.getAttribute('data-layout') || 'default';
+
+        var body = null;
+        if (layout === 'popup') {
+            var trigger = document.createElement('button');
+            trigger.type = 'button';
+            trigger.className = 'cmspro-share-trigger';
+            var tIcon = document.createElement('i');
+            tIcon.className = 'fa fa-share-alt';
+            var tLabel = document.createElement('span');
+            tLabel.textContent = '分享';
+            trigger.appendChild(tIcon);
+            trigger.appendChild(tLabel);
+            body = document.createElement('div');
+            body.className = 'cmspro-share-popup-body';
+            body.hidden = true;
+            holder.appendChild(trigger);
+            holder.appendChild(body);
+        }
+
+        var target = body || holder;
         channels.forEach(function (channel) {
             var btn = document.createElement('button');
             btn.type = 'button';
@@ -236,7 +300,7 @@
             label.textContent = channel.name;
             btn.appendChild(icon);
             btn.appendChild(label);
-            holder.appendChild(btn);
+            target.appendChild(btn);
         });
     }
 
@@ -258,7 +322,9 @@
     }
 
     document.addEventListener('click', function (e) {
-        var button = e.target.closest ? e.target.closest('.cmspro-share-btn') : null;
+        var button = e.target.closest
+            ? e.target.closest('.cmspro-share-btn, .cmspro-share-trigger')
+            : null;
         if (button) {
             e.preventDefault();
             handleClick(button);

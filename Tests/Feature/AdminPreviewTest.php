@@ -137,6 +137,16 @@ class AdminPreviewTest extends ShareTestCase
         $this->assertStringContainsString('.cmspro-share-copy-btn', $css, '弹层需有复制按钮样式');
     }
 
+    public function test_preview_page_offers_layout_switcher(): void
+    {
+        $html = $this->renderPage();
+
+        $this->assertStringContainsString('layoutSelect', $html, '预览页需提供展现方式选择器');
+        $this->assertStringContainsString('纯图标', $html, '需支持纯图标布局预览');
+        $this->assertStringContainsString('纯文字', $html, '需支持纯文字布局预览');
+        $this->assertStringContainsString('点击弹出', $html, '需支持点击弹出面板布局预览');
+    }
+
     public function test_scene_list_includes_demo_and_registered_scenes(): void
     {
         $this->withoutMiddleware();

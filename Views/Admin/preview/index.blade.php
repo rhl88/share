@@ -53,6 +53,17 @@
                         </div>
                     </div>
                     <div class="layui-inline">
+                        <label class="layui-form-label">展现方式</label>
+                        <div class="layui-input-inline" style="width: 160px;">
+                            <select name="layout" id="layoutSelect" lay-filter="layoutSelect">
+                                <option value="default">图标+文字（默认）</option>
+                                <option value="icon">纯图标</option>
+                                <option value="text">纯文字</option>
+                                <option value="popup">点击弹出</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="layui-inline">
                         <button type="button" class="layui-btn" id="btnBuild"><i class="fa fa-eye"></i> 生成预览</button>
                     </div>
                 </div>
@@ -65,7 +76,7 @@
             <div class="layui-card-header">分享面板（真实交互，可点击体验）</div>
             <div class="layui-card-body">
                 <div id="sharePanel"></div>
-                <p class="share-hint">按钮图标取自渠道 icon 配置，未配置时回退通用分享图标。按钮行为由前端 SDK 接管：链接型渠道打开分享端点，复制链接 / 二维码 / 海报 / 原生分享按渠道 mode 执行；在电脑上点击「微信好友 / 朋友圈」会弹出扫码分享层（手机扫码转发 + 复制文字 / 链接）；点击会上报 click 事件。</p>
+                <p class="share-hint">展现方式支持四种形态：图标+文字（默认）、纯图标、纯文字、点击弹出（弹层内为完整图标+文字面板）。按钮图标取自渠道 icon 配置；在电脑上点击「微信好友 / 朋友圈」会弹出扫码分享层（手机扫码转发 + 复制文字 / 链接）；点击会上报 click 事件。</p>
             </div>
         </div>
 
@@ -154,20 +165,36 @@ layui.use(['form', 'layer', 'table', 'jquery'], function () {
         form.render('select');
     });
 
-    function render(d) {
-        $('#previewResult').show();
-
-        // 与 share_render() 输出的 DOM 结构完全一致，交由前端 SDK 接管点击
-        var html = '<div class="cmspro-share" data-share-code="' + esc(d.code)
-            + '" data-share-url="' + esc(d.url)
-            + '" data-share-title="' + esc(d.title) + '">';
+    // 按展现方式渲染面板，DOM 结构与 share_render() 的 layout 参数输出完全一致，交由前端 SDK 接管点击
+    function renderPanel(d, layout) {
+        var buttons = '';
         (d.channels || []).forEach(function (c) {
-            html += '<button type="button" class="cmspro-share-btn" data-channel="' + esc(c.code)
+            buttons += '<button type="button" class="cmspro-share-btn" data-channel="' + esc(c.code)
                 + '" data-mode="' + esc(c.mode) + '" data-href="' + esc(c.url)
                 + '" title="' + esc(c.name) + '"><i class="' + esc(c.icon || 'fa fa-share-alt')
                 + '"></i><span>' + esc(c.name) + '</span></button>';
         });
-        $('#sharePanel').html(html + '</div>');
+
+        var inner;
+        if (layout === 'popup') {
+            inner = '<button type="button" class="cmspro-share-trigger"><i class="fa fa-share-alt"></i><span>分享</span></button>'
+                + '<div class="cmspro-share-popup-body" hidden>' + buttons + '</div>';
+        } else {
+            inner = buttons;
+        }
+
+        $('#sharePanel').html('<div class="cmspro-share" data-layout="' + esc(layout)
+            + '" data-share-code="' + esc(d.code)
+            + '" data-share-url="' + esc(d.url)
+            + '" data-share-title="' + esc(d.title) + '">' + inner + '</div>');
+    }
+
+    var lastData = null;
+
+    function render(d) {
+        $('#previewResult').show();
+        lastData = d;
+        renderPanel(d, $('#layoutSelect').val() || 'default');
 
         $('#pvCode').text(d.code);
         $('#pvUrl').text(d.url);
@@ -213,6 +240,11 @@ layui.use(['form', 'layer', 'table', 'jquery'], function () {
 
     $('#btnBuild').on('click', build);
     $('#previewForm').on('submit', function () { return false; });
+
+    // 切换展现方式时用最近一次生成结果即时重渲染
+    form.on('select(layoutSelect)', function () {
+        if (lastData) { renderPanel(lastData, $('#layoutSelect').val() || 'default'); }
+    });
 });
 </script>
 </body>

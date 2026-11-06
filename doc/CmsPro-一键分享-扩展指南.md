@@ -140,6 +140,24 @@ class ArticleShareResolver
 ]) !!}
 ```
 
+**展现方式（`options['layout']`）**，按页面场景自由选择：
+
+| layout | 效果 | 适用场景 |
+|--------|------|----------|
+| `default` | 图标+文字按钮（默认） | 文章详情页、常规内容页 |
+| `icon` | 纯图标按钮（方形收窄，title 提示渠道名） | 侧边悬浮栏、工具条等窄空间 |
+| `text` | 纯文字按钮 | 简约排版、移动端底部栏 |
+| `popup` | 一个「分享」触发按钮，点击弹出完整图标+文字面板 | 顶部导航栏、卡片角落等空间受限处 |
+
+```blade
+{!! share_render('blog.article', $article->id, ['layout' => 'icon']) !!}
+{!! share_render('blog.article', $article->id, ['layout' => 'text']) !!}
+{!! share_render('blog.article', $article->id, ['layout' => 'popup']) !!}
+```
+
+> 传入非法 `layout` 时回退 `default`；旧参数 `show_label => false` 等价于 `layout => icon`，继续保持兼容。
+> 纯前端接入（`data-share-widget`）同样支持：在容器上写 `data-layout="icon|text|popup"` 即可，SDK 按相同结构渲染。
+
 前端交互（复制链接、二维码弹层、海报、原生分享、微信引导、点击上报）由自动注入的 `Assets/js/share.js` 接管，业务页面无需额外代码。
 
 > 分享者 ID 未显式传入时，服务会自动取 `auth('web')->id()`；上级分享码未传入时，自动读取当前请求中 `parent_param`（默认 `from`）参数。
