@@ -10,10 +10,11 @@
     <link rel="stylesheet" href="{{ asset('Admin/css/variables.css') }}">
     <link rel="stylesheet" href="{{ asset('Admin/css/reset.css') }}">
     <style>
-        .share-stat-grid { display: flex; flex-wrap: wrap; gap: 16px; }
-        .share-stat-card { flex: 1 1 160px; border: 1px solid #e6e6e6; border-radius: 8px; padding: 18px; background: #fff; }
-        .share-stat-card h3 { font-size: 13px; color: #666; font-weight: 400; margin-bottom: 8px; }
-        .share-stat-card strong { font-size: 26px; color: #1f2937; }
+        /* 概览卡必须保持在同一行：禁止换行，卡片等分宽度（basis 0 + min-width 0 允许收缩） */
+        .share-stat-grid { display: flex; flex-wrap: nowrap; gap: 16px; }
+        .share-stat-card { flex: 1 1 0; min-width: 0; border: 1px solid #e6e6e6; border-radius: 8px; padding: 18px; background: #fff; }
+        .share-stat-card h3 { font-size: 13px; color: #666; font-weight: 400; margin-bottom: 8px; white-space: nowrap; }
+        .share-stat-card strong { font-size: 26px; color: #1f2937; white-space: nowrap; }
     </style>
 </head>
 <body>

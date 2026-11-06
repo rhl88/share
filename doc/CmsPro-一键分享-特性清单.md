@@ -152,10 +152,11 @@
 | 65 | 应用级测试 | 测试放应用自身 `Tests/`，不进框架 `tests/` | `Tests/` |
 | 66 | 测试基类 | 手动补建系统表、执行应用迁移、注册应用 Provider | `Tests/ShareTestCase.php` |
 | 67 | 覆盖场景 | 正常流程、未注册场景、钩子扩展、UV 去重、配置开关、权限拦截、日期格式、二维码、报表、列表表格对齐、设置页分组 Tab、分享预览真实生成、组件资源路径与渠道图标 | `Tests/Feature/ShareFlowTest.php`、`Tests/Feature/AdminTableViewTest.php`、`Tests/Feature/AdminSettingsTabTest.php`、`Tests/Feature/AdminPreviewTest.php`、`Tests/Unit/ChannelServiceTest.php` |
-| 68 | 验证结果 | `php artisan test app/Apps/CmsproShare/Tests` → 57 passed / 394 assertions | 验收记录 |
+| 68 | 验证结果 | `php artisan test app/Apps/CmsproShare/Tests` → 58 passed / 397 assertions | 验收记录 |
 | 69 | F61 修复 | 前台 `track` / `convert` 端点改手动校验（`Validator::make` + `ApiResponse::error(422)`），普通 POST（无 Accept JSON 头）校验失败返回 JSON 契约而非 302 重定向 HTML（常见问题第 1 章）；`share.js` 上报请求补 `Accept: application/json` 头；新增 `TrackApiValidationTest` 6 用例 | `WidgetController`、`share.js` |
 | 70 | 微信扫码弹层 | PC 端（非微信环境）点击「微信好友 / 朋友圈」弹出扫码分享层：复用公开二维码端点生成中转链接二维码（手机扫码即可在微信内转发，本地电脑无需登录微信），并提供「复制文字」（标题+链接）与「复制链接」；微信内行为不变（JS-SDK 或右上角引导）；新增 1 个回归用例 | `share.js`、`share.css` |
 | 71 | 多展现方式 | 分享面板支持四种布局（`share_render` 的 `options['layout']` / 纯前端容器的 `data-layout`）：`default` 图标+文字、`icon` 纯图标（方形收窄）、`text` 纯文字、`popup`「分享」触发按钮点击弹出完整面板；非法值回退 default，旧参数 `show_label=false` 兼容等价 icon；分享预览页提供「展现方式」下拉切换即时预览；纯前端 widget 模式同步支持；新增 2 个回归用例 | `helpers.php`、`share.js`、`share.css`、预览页 |
+| 72 | 看板概览卡单行 | 数据看板 8 张概览卡改为不换行等分布局（`flex-wrap: nowrap` + `flex: 1 1 0` + `min-width: 0`），修复容器较窄时末位「转化率」卡片被挤到第二行的问题；标题与数字 `white-space: nowrap` 防折行；新增 1 个回归用例 | `Views/Admin/stats/index.blade.php` |
 
 ## 十三、版本历史
 

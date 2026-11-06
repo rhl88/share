@@ -116,6 +116,16 @@ class AdminTableViewTest extends ShareTestCase
         $this->assertSame(3, substr_count($html, 'table.reload('), '看板三张表应通过 reload 更新数据');
     }
 
+    public function test_stats_overview_cards_stay_on_single_row(): void
+    {
+        $html = $this->renderView('cmspro.share::Admin.stats.index');
+
+        // 看板 8 张概览卡必须保持同一行：容器禁止换行，卡片等分且允许收缩
+        $this->assertStringContainsString('flex-wrap: nowrap', $html, '概览卡容器不得换行');
+        $this->assertStringContainsString('flex: 1 1 0', $html, '概览卡需等分宽度（basis 0）');
+        $this->assertStringNotContainsString('flex: 1 1 160px', $html, '固定 160px 基准会在窄容器下把末位卡片挤出首行');
+    }
+
     public function test_pagination_parameter_stays_limit(): void
     {
         foreach ([
